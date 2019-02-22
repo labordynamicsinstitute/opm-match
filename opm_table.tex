@@ -1,0 +1,143 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Defining the document class
+%!TeX TXS-program:bibliography = txs:///biber
+\documentclass{article}
+
+\input{template.tex}
+
+\usepackage{authblk}
+\usepackage[%
+plainpages,%
+colorlinks,% removes the boxes around links
+urlcolor=black,%
+filecolor=black,%
+citecolor=Blue,%   requires xcolor with option dvipsnames
+pdfpagemode=UseOutlines,%
+pdfauthor={Lars Vilhuber},%
+pdfsubject={Bibliography},%
+]{hyperref}
+
+\usepackage[style=chicago-authordate,sorting=ydnt,maxnames=10,backend=biber]{biblatex}
+\addbibresource{some.bib}
+
+\defbibfilter{papers}{
+	type=article or
+	type=inproceedings or
+	type=conference or
+	type=proceedings or
+	type=incollection or
+	type=inbook
+}
+% Clear some stuff from the bibliography
+\AtEveryBibitem{%
+	\clearfield{day}%
+	\clearfield{month}%
+	\clearfield{endday}%
+	\clearfield{endmonth}%
+	\clearlist{language}%
+	\clearfield{issn}%
+	\clearfield{eprint}% - adjust if necessary
+	\iffieldundef{doi}{}{\clearfield{url}}% remove URL field if DOI present    
+}
+
+\author[1,2]{Lars Vilhuber}
+\affil[1]{Cornell University}
+\affil[2]{U.S. Census Bureau}
+
+%%%%%
+\usepackage{longtable}
+
+\begin{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{table}[htbp]
+	\centering
+	\caption{OPM Content Differences}
+	\begin{tabular}{l|rccccc}
+		Variable 	&& Buzzfeed && Cornell-FOIA(2013) && Fedscope \\ \hline\hline
+		Employee Name&&1&&0&&0\\
+		Pseudo ID&&1&&1&&1\\
+		Agency/Subelement&&1&&1&&1\\
+		Duty Station&&1&&1&&0\\
+		Location (State/Country)&&0&&0&&1\\
+		Age Level&&1&&1&&1\\
+		Sex &&0&&1&&1\\
+		Ethnicity&&0&&0&&1\\
+		Race&&0&&0&&1\\
+		GS-Equivalent Grade&&0&&1&&1\\
+		Length of Service&&0&&1&&1\\
+		Occupation'&&1&&1&&1\\
+		Occupational Category&&1&&1&&1\\
+		Pay Plan &&1&&1&&1\\
+		Grade&&1&&1&&1\\
+		Average Salary&&0&&0&&1\\
+		Average Length of Service&&0&&0&&1\\
+		Adjusted Basic Pay&&1&&1&&1\\
+		Employment&&0&&0&&1\\
+		Supervisory Status&&1&&0&&1\\
+		Type of Appointment&&1&&1&&1\\
+		Work Schedule&&1&&1&&1\\
+		Work Status&&0&&0&&1\\
+		CBSA&&0&&1&&0\\
+		MSA-RETRO&&0&&1&&1\\
+		Education Level&&1&&1&&1\\
+		STEM Occupation&&0&&0&&1\\
+		File Date&&0&&1&&0\\
+		Start Date&&0&&1&&0\\
+		End Date&&0&&1&&0\\
+		Year&&1&&1&&1\\
+		Quarter&&1&&1&&1\\
+		Accession&&1&&0&&1\\
+		Effective Date of Accession&&1&&0&&1\\
+		Separation&&1&&0&&1\\
+		Effective Date of Separation&&1&&0&&1\\
+	\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+	\centering
+	\caption{OPM Content Differences}
+	\begin{tabular}{l|rccccc}
+		Variable 	&& Buzzfeed && Cornell-FOIA(2016) && Fedscope \\ \hline\hline
+		Employee Name&&1&&1&&0\\
+		Pseudo ID&&1&&1&&1\\
+		Agency/Subelement&&1&&1&&1\\
+		Duty Station&&1&&1&&0\\
+		Location (State/Country)&&0&&0&&1\\
+		Age Level&&1&&1&&1\\
+		Sex &&0&&0&&1\\
+		Ethnicity&&0&&0&&1\\
+		Race&&0&&0&&1\\
+		GS-Equivalent Grade&&0&&0&&1\\
+		Length of Service&&0&&1&&1\\
+		Occupation'&&1&&1&&1\\
+		Occupational Category&&1&&1&&1\\
+		Pay Plan &&1&&1&&1\\
+		Grade&&1&&1&&1\\
+		Average Salary&&0&&0&&1\\
+		Average Length of Service&&0&&0&&1\\
+		Adjusted Basic Pay&&1&&1&&1\\
+		Employment&&0&&0&&1\\
+		Supervisory Status&&1&&0&&1\\
+		Type of Appointment&&1&&1&&1\\
+		Work Schedule&&1&&1&&1\\
+		Work Status&&0&&0&&1\\
+		CBSA&&0&&1&&0\\
+		MSA-RETRO&&0&&0&&1\\
+		Education Level&&1&&1&&1\\
+		STEM Occupation&&0&&0&&1\\
+		File Date&&0&&1&&0\\
+		Start Date&&0&&1&&0\\
+		End Date&&0&&1&&0\\
+		Year&&1&&1&&1\\
+		Quarter&&1&&1&&1\\
+		Accession&&1&&0&&1\\
+		Effective Date of Accession&&1&&0&&1\\
+		Separation&&1&&0&&1\\
+		Effective Date of Separation&&1&&0&&1\\
+		Nature of Action Code&&0&&1&&0\\
+		Effective Date of Nature of Action Code&&0&&1&&0\\
+	\end{tabular}
+\end{table}
+
+\end{document}

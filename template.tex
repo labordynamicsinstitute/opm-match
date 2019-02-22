@@ -1,0 +1,89 @@
+\usepackage{etoolbox}
+\usepackage{geometry}
+\usepackage[usenames,dvipsnames]{xcolor}
+\usepackage{versions}
+\usepackage{placeins} % for \FloatBarrier
+\usepackage{setspace}
+\newcommand{\red}{\color{red}}
+\newcommand{\blue}{\color{blue}}
+\newcommand{\green}{\color{green}}
+
+%%% 
+%%%   INSTRUCTIONS
+%%%
+%%% Just comment out one or the other of the "togglefalse/toggletrue" pairs
+
+\newtoggle{final}
+\newtoggle{blind}
+\togglefalse{final}
+%\toggletrue{final}
+%\toggletrue{blind}
+\togglefalse{blind}
+
+% 
+% Align numbers in tables
+%
+
+\usepackage{dcolumn}
+\newcolumntype{d}[1]{D{.}{.}{#1}}
+\usepackage{siunitx}
+%
+% Include/exclude environments
+%
+\iftoggle{final}{\excludeversion{instructions}}%
+{\includeversion{instructions}}
+
+
+%
+% allow for instructions
+%
+\renewenvironment{instructions}{\color{lightgray}\footnotesize\it
+\begin{tabular}{p{0.9\textwidth}}
+    \hline\\
+    }%
+{\\\hline\\\end{tabular}}
+
+
+%
+% Layout
+%
+\iftoggle{final}{
+%  \geometry{left=1.0in,right=1.0in,top=1.0in,bottom=1.0in}
+}%else
+{
+  \geometry{left=0.5in,right=2.0in,top=1.0in,bottom=1.0in,marginparwidth=1.5in}
+  }
+
+%
+% Notes
+%
+% May also want to insert the following near the top of the document
+%
+%
+\iftoggle{final}{
+    \usepackage[disable]{todonotes}
+    \newcommand{\mc}[2]{#1} % make margincomments go away
+    \newcommand{\insertref}[1]{}
+}%else
+{
+    \usepackage[colorinlistoftodos]{todonotes}
+    \newcommand{\insertref}[1]{\todo[color=green!40]{#1}}
+    \newcommand{\mc}[2]{% 1 referenced text 2  comment
+       \textcolor{OliveGreen}{#1}%
+       \todo[linecolor=OliveGreen]{\protect\begin{spacing}{0.5}#2\protect\end{spacing}}~
+    }
+}
+
+%
+% Use this version if the todonotes package is not available
+%
+%\iftoggle{final}{
+%   \newcommand{\mc}[2]{#1} % make margincomments go away
+%   \newcommand{\tc}[2]{#1} % make text comments go away
+%}%else
+%{
+%\newcommand{\mc}[2]{% 1 referenced text 2 initials 3 comment
+%\textcolor{OliveGreen}{#1}%
+%\marginpar{\scriptsize\textbf\raggedright\textcolor{red}{#2}}}
+%\newcommand{\tc}[2]{\textcolor{green}{#1}[\textcolor{red}{#2}]}
+%}
