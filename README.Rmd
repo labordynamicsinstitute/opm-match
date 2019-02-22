@@ -1,0 +1,109 @@
+---
+title: "OPM Plan B"
+author: "Lars Vilhuber"
+date: "2/22/2019"
+output: 
+  html_document: 
+    keep_md: yes
+    number_sections: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+source(file.path(rprojroot::find_rstudio_root_file(),"pathconfig.R"),echo=TRUE)
+source(file.path(programs,"config.R"), echo=TRUE)
+
+# Any libraries needed are called and if necessary installed through `libraries.R`:
+
+source(file.path(basepath,"global-libraries.R"),echo=TRUE)
+#source(file.path(programs,"libraries.R"), echo=TRUE)
+```
+
+
+# Situation
+
+For a variety of reasons, the DUA (Data Use Agreement) between OPM and the Census Bureau has not been finalized for a signficant time. This puts at risk dependent data products (QWI, J2J, LODES). The present document outlines a fallback strategy which may allow for such dependent products to continue to be produced, albeit with some quality reductions. It is expected that quality compromises are minimal in the short-run, but would continue to increase over time. We address some workarounds at the end of this document.
+
+# Naming convention
+
+
+  + OPM(Census) – OPM microdata acquired through DUA (last year of data: 2015)
+  + OPM(FOIA[x]) – OPM microdata acquired through FOIA request to OPM (x = Cornell1, Cornell2, Buzzfeed). Time coverage varies
+  + OPM(PU) – OPM microdata publicly available at Fedscope.gov
+  + ECF(A) – ECF built with dataset A
+
+# Availability of Data
+
+> TODO:  This still needs the data elements on the internal data
+
+The various data sources do not all have the same data elements:
+
+```{r read_overview, cache=T}
+overview <- read_excel("overview.xlsx") %>% select("Variable","Buzzfeed","Cornell-FOIA 2013","Cornell FOIA 2016", "Fedscope-old","Fedscope-new" )
+kable(overview %>% slice(1:10)) %>%
+	kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = F)
+```
+(with another `r nrow(overview)-10` rows not shown)
+
+```{r common, include=FALSE}
+overview <- overview %>% mutate(common = rowSums(.[2:ncol(overview)]))
+pikvars <- c("Employee Name", "Sex", "Age Level")
+```
+
+
+In particular, `r nrow(filter(overview,common==5))` variables are common to all public datasets, but key variables are present only on one or two datasets:
+```{r common_vars, echo=FALSE}
+overview %>% filter(common < 5 & common > 1) %>%
+	mutate_at(.vars=2:ncol(overview), .funs = funs( cell_spec(.,"html", bold = ifelse(. > 0, TRUE, FALSE)))) %>%
+	kable(format = "html", escape=F) %>%
+	kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = F)
+```
+
+
+## Data for tabulation purposes
+
+For tabulation purposes, a few key variables are missing from some of the public-use data, which means no single data source is adequate for LEHD purposes:
+
+```{r needed_vars, echo=FALSE}
+overview %>% filter(Variable %in% c("PIK","Employee Name", "Duty Station","Sex", "Ethnicity", "Age Level", "Race")) %>%
+	mutate_at(.vars=2:ncol(overview), .funs = funs( cell_spec(.,"html", bold = ifelse(. > 0, TRUE, FALSE)))) %>%
+	kable(format = "html", escape=F) %>%
+	kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = F)
+```
+
+Note that the combination of `r pikvars`  may be sufficient to acquire a `PIK` within the secure confines of the Census Bureau: 
+```{r needed_vars2, echo=FALSE}
+overview %>% filter(Variable %in% pikvars) %>%
+	mutate_at(.vars=2:ncol(overview), .funs = funs( cell_spec(.,"html", bold = ifelse(. > 0, TRUE, FALSE)))) %>%
+	kable(format = "html", escape=F) %>%
+	kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = F)
+```
+Alternatively, matching the consolidated public-use file to the confidential internal use file by the same methods will pick up a `PIK` from historical files. 
+
+None of the files have residential address - required for LODES processing. This requires the acquisition of a `PIK`. 
+
+# The Plan
+
+## Step 1: Entity resolution for public data
+Using [Chen, Shrivastava, Steorts (2018)](https://arxiv.org/abs/1710.02690) algorithms ([fasthash](https://github.com/resteorts/fasthash)), resolve to unique persons, using common variables as distinguishers. This still requires some work, as [fasthash](https://github.com/resteorts/fasthash) estimates, but does not output unique entities. Generates `OPM(merged)`.
+
+## Step 2: Repeat entity resolution using private data
+
+We then repeat the process with the private data. This attaches a PIK to most records. Imputation procedures (standard LEHD) will need to handle the remaining ones. 
+
+### Step 2a: Alternative match
+Alternatively, the `OPM(merged)` file can be matched to `OPM(Census)` using classical two-file matchers. This does not provide the best statistical features, but may be a feasible workaround.
+
+### Step 2b: Matching to Numident
+Note that one possibility is to include the Census Numident in the set of files that are matched against (using a subset of variables), leveraging the demographics available on the `OPM(merged)`. file. However, the match will be less certain, given the paucity of common information.
+
+## Scope
+
+For a given *end year* `t` on `OPM(Census)`, this will yield at least a `t+1` file. `OPM(Fedscope-new)` is released every quarter. `OPM(FOIA-new)`  can be generated at some cost yearly. As the link to `OPM(Buzzfeed)` and `OPM(Census)` gets farther away (`t+k`), the match quality will decrease/ non-matchable records increase. 
+
+## Quality assessment
+
+We would want to leverage the uncertainty in the linkage for tabulation purposes, providing a measure of the uncertainty to the tabulation system (imputed demographics are already carried forward in 10 implicates).
+
+![graph](RB 033-2018-08-16 17.12.36.jpg)
+
