@@ -25,9 +25,38 @@ For a variety of reasons, the DUA (Data Use Agreement) between OPM and the Censu
 
 # Availability of Data
 
+## Locations at Cornell
+
+```r
+kable(opmlocs)
+```
+
+<table>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> x </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> /data//clean/opm-foia/somewhere </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> /data//clean/opm-foia/else </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> /data//clean/opm-buzzfeed </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> /data//clean/opm </td>
+  </tr>
+</tbody>
+</table>
+
+## Variables
 > TODO:  This still needs the data elements on the internal data
 
-The various data sources do not all have the same data elements:
+The various data sources do not all have the same data elements ([full list](overview.xls)):
 
 
 ```r
@@ -110,8 +139,8 @@ kable(overview %>% slice(1:10)) %>%
    <td style="text-align:right;"> 0 </td>
    <td style="text-align:right;"> 1 </td>
    <td style="text-align:right;"> 0 </td>
-   <td style="text-align:right;"> 0 </td>
    <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 0 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Ethnicity </td>
@@ -145,6 +174,19 @@ kable(overview %>% slice(1:10)) %>%
 
 
 In particular, 12 variables are common to all public datasets, but key variables are present only on one or two datasets:
+
+```
+## Warning: funs() is soft deprecated as of dplyr 0.8.0
+## please use list() instead
+## 
+## # Before:
+## funs(name = f(.)
+## 
+## # After: 
+## list(name = ~f(.))
+## This warning is displayed once per session.
+```
+
 <table class="table table-striped table-hover table-condensed" style="width: auto !important; margin-left: auto; margin-right: auto;">
  <thead>
   <tr>
@@ -181,8 +223,8 @@ In particular, 12 variables are common to all public datasets, but key variables
    <td style="text-align:left;"> <span style="     ">0</span> </td>
    <td style="text-align:left;"> <span style=" font-weight: bold;    ">1</span> </td>
    <td style="text-align:left;"> <span style="     ">0</span> </td>
-   <td style="text-align:left;"> <span style="     ">0</span> </td>
    <td style="text-align:left;"> <span style=" font-weight: bold;    ">1</span> </td>
+   <td style="text-align:left;"> <span style="     ">0</span> </td>
    <td style="text-align:left;"> <span style=" font-weight: bold;    ">2</span> </td>
   </tr>
   <tr>
@@ -409,8 +451,8 @@ For tabulation purposes, a few key variables are missing from some of the public
    <td style="text-align:left;"> <span style="     ">0</span> </td>
    <td style="text-align:left;"> <span style=" font-weight: bold;    ">1</span> </td>
    <td style="text-align:left;"> <span style="     ">0</span> </td>
-   <td style="text-align:left;"> <span style="     ">0</span> </td>
    <td style="text-align:left;"> <span style=" font-weight: bold;    ">1</span> </td>
+   <td style="text-align:left;"> <span style="     ">0</span> </td>
    <td style="text-align:left;"> <span style=" font-weight: bold;    ">2</span> </td>
   </tr>
   <tr>
@@ -471,8 +513,8 @@ Note that the combination of Employee Name, Sex, Age Level  may be sufficient to
    <td style="text-align:left;"> <span style="     ">0</span> </td>
    <td style="text-align:left;"> <span style=" font-weight: bold;    ">1</span> </td>
    <td style="text-align:left;"> <span style="     ">0</span> </td>
-   <td style="text-align:left;"> <span style="     ">0</span> </td>
    <td style="text-align:left;"> <span style=" font-weight: bold;    ">1</span> </td>
+   <td style="text-align:left;"> <span style="     ">0</span> </td>
    <td style="text-align:left;"> <span style=" font-weight: bold;    ">2</span> </td>
   </tr>
 </tbody>

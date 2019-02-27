@@ -34,9 +34,15 @@ For a variety of reasons, the DUA (Data Use Agreement) between OPM and the Censu
 
 # Availability of Data
 
+## Locations at Cornell
+```{r}
+kable(opmlocs)
+```
+
+## Variables
 > TODO:  This still needs the data elements on the internal data
 
-The various data sources do not all have the same data elements:
+The various data sources do not all have the same data elements ([full list](overview.xls)):
 
 ```{r read_overview, cache=T}
 overview <- read_excel("overview.xlsx") %>% select("Variable","Buzzfeed","Cornell-FOIA 2013","Cornell FOIA 2016", "Fedscope-old","Fedscope-new" )

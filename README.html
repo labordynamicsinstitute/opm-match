@@ -400,10 +400,47 @@ $(document).ready(function () {
 </div>
 <div id="availability-of-data" class="section level1">
 <h1><span class="header-section-number">3</span> Availability of Data</h1>
+<div id="locations-at-cornell" class="section level2">
+<h2><span class="header-section-number">3.1</span> Locations at Cornell</h2>
+<pre class="r"><code>kable(opmlocs)</code></pre>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+x
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+/data//clean/opm-foia/somewhere
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+/data//clean/opm-foia/else
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+/data//clean/opm-buzzfeed
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+/data//clean/opm
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="variables" class="section level2">
+<h2><span class="header-section-number">3.2</span> Variables</h2>
 <blockquote>
 <p>TODO: This still needs the data elements on the internal data</p>
 </blockquote>
-<p>The various data sources do not all have the same data elements:</p>
+<p>The various data sources do not all have the same data elements (<a href="overview.xls">full list</a>):</p>
 <pre class="r"><code>overview &lt;- read_excel(&quot;overview.xlsx&quot;) %&gt;% select(&quot;Variable&quot;,&quot;Buzzfeed&quot;,&quot;Cornell-FOIA 2013&quot;,&quot;Cornell FOIA 2016&quot;, &quot;Fedscope-old&quot;,&quot;Fedscope-new&quot; )</code></pre>
 <pre><code>## New names:
 ## * `` -&gt; `..9`
@@ -568,10 +605,10 @@ Sex
 0
 </td>
 <td style="text-align:right;">
-0
+1
 </td>
 <td style="text-align:right;">
-1
+0
 </td>
 </tr>
 <tr>
@@ -637,7 +674,16 @@ GS-Equivalent Grade
 </tbody>
 </table>
 <p>(with another 28 rows not shown)</p>
-In particular, 12 variables are common to all public datasets, but key variables are present only on one or two datasets:
+<p>In particular, 12 variables are common to all public datasets, but key variables are present only on one or two datasets:</p>
+<pre><code>## Warning: funs() is soft deprecated as of dplyr 0.8.0
+## please use list() instead
+## 
+## # Before:
+## funs(name = f(.)
+## 
+## # After: 
+## list(name = ~f(.))
+## This warning is displayed once per session.</code></pre>
 <table class="table table-striped table-hover table-condensed" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
@@ -725,10 +771,10 @@ Sex
 <span style="     ">0</span>
 </td>
 <td style="text-align:left;">
-<span style="     ">0</span>
+<span style=" font-weight: bold;    ">1</span>
 </td>
 <td style="text-align:left;">
-<span style=" font-weight: bold;    ">1</span>
+<span style="     ">0</span>
 </td>
 <td style="text-align:left;">
 <span style=" font-weight: bold;    ">2</span>
@@ -1173,8 +1219,9 @@ Effective Date of Separation
 </tr>
 </tbody>
 </table>
+</div>
 <div id="data-for-tabulation-purposes" class="section level2">
-<h2><span class="header-section-number">3.1</span> Data for tabulation purposes</h2>
+<h2><span class="header-section-number">3.3</span> Data for tabulation purposes</h2>
 <p>For tabulation purposes, a few key variables are missing from some of the public-use data, which means no single data source is adequate for LEHD purposes:</p>
 <table class="table table-striped table-hover table-condensed" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
@@ -1286,10 +1333,10 @@ Sex
 <span style="     ">0</span>
 </td>
 <td style="text-align:left;">
-<span style="     ">0</span>
+<span style=" font-weight: bold;    ">1</span>
 </td>
 <td style="text-align:left;">
-<span style=" font-weight: bold;    ">1</span>
+<span style="     ">0</span>
 </td>
 <td style="text-align:left;">
 <span style=" font-weight: bold;    ">2</span>
@@ -1431,10 +1478,10 @@ Sex
 <span style="     ">0</span>
 </td>
 <td style="text-align:left;">
-<span style="     ">0</span>
+<span style=" font-weight: bold;    ">1</span>
 </td>
 <td style="text-align:left;">
-<span style=" font-weight: bold;    ">1</span>
+<span style="     ">0</span>
 </td>
 <td style="text-align:left;">
 <span style=" font-weight: bold;    ">2</span>
