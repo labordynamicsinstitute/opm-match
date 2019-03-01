@@ -39,19 +39,28 @@ kable(opmlocs)
  </thead>
 <tbody>
   <tr>
-   <td style="text-align:left;"> /home/fs01/ssgprojects/data/clean/opm-foia </td>
+   <td style="text-align:left;"> /data/clean/opm-foia </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> /home/fs01/ssgprojects/data/raw/opm-foia/2016 </td>
+   <td style="text-align:left;"> /data/raw/opm-foia/2016 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> /home/fs01/ssgprojects/data/raw/opm-foia/buzzfeed </td>
+   <td style="text-align:left;"> /data/raw/opm-foia/buzzfeed </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> /home/fs01/ssgprojects/data/clean/opm </td>
+   <td style="text-align:left;"> /data/clean/opm </td>
   </tr>
 </tbody>
 </table>
+
+Sources: 
+
+OPM 		"/data/doc/opm/SRC.txt"
+Buzzfeed 	"/data/doc/opm-foia/Buzzfeed-20170524-Were Sharing A Vast Trove Of Federal Payroll Records.pdf"
+Cornell-FOIA 2013 "/data/doc/opm-foia/20131126154301380.pdf"
+Cornell-FOIA 2016 "/data/doc/opm-foia/OPM letter FOIA response 201611.pdf"
+Fedscope 	"/data/doc/opm/FS_Employment_Sep2011_Documentation.pdf"
+
 
 ## Variables
 > TODO:  This still needs the data elements on the internal data
