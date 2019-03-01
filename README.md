@@ -39,16 +39,16 @@ kable(opmlocs)
  </thead>
 <tbody>
   <tr>
-   <td style="text-align:left;"> /data//clean/opm-foia/somewhere </td>
+   <td style="text-align:left;"> /home/fs01/ssgprojects/data/clean/opm-foia </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> /data//clean/opm-foia/else </td>
+   <td style="text-align:left;"> /home/fs01/ssgprojects/data/raw/opm-foia/2016 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> /data//clean/opm-buzzfeed </td>
+   <td style="text-align:left;"> /home/fs01/ssgprojects/data/raw/opm-foia/buzzfeed </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> /data//clean/opm </td>
+   <td style="text-align:left;"> /home/fs01/ssgprojects/data/clean/opm </td>
   </tr>
 </tbody>
 </table>
