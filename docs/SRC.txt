@@ -1,0 +1,11 @@
+# $Id$ #
+# $URL$ #
+http://www.data.gov/catalog/raw/category/0/agency/0/filter/opm/type//sort//page/1/count/100#data
+http://www.opm.gov/Data/Index.aspx?tag=FedScope
+
+fdb8db0d-ce56-4966-9572-9692e6e0fa5e.zip FS_Employment_Mar2016.zip
+944a9e54-69b5-4b74-8395-4f6eca37e650.zip FS_Employment_Dec2015.zip
+b37f45b7-56ab-4e0f-98d0-869db2f47003.zip FS_separations_fy2015.zip
+f5ba2c6c-469a-4e7c-926f-ad3c15dbfbe1.zip FS_accessions_fy2015.zip
+de1dd3f7-0c39-46ab-a1c6-848be284358b.zip FS_Employment_Sept2015.zip
+

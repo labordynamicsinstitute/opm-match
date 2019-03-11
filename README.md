@@ -24,7 +24,7 @@ For a variety of reasons, the DUA (Data Use Agreement) between OPM and the Censu
   + ECF(A) – ECF built with dataset A
 
 # Availability of Data
-
+/home/ssgprojects/project0002/cdl77/opm-clean/
 ## Locations at Cornell
 
 ```r
@@ -42,10 +42,10 @@ kable(opmlocs)
    <td style="text-align:left;"> /data/clean/opm-foia </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> /data/raw/opm-foia/2016 </td>
+   <td style="text-align:left;"> /ssgprojects/project0002/cdl77/opm-clean/outputs/2016 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> /data/raw/opm-foia/buzzfeed </td>
+   <td style="text-align:left;"> /ssgprojects/project0002/cdl77/opm-clean/outputs/buzzfeed </td>
   </tr>
   <tr>
    <td style="text-align:left;"> /data/clean/opm </td>
@@ -55,10 +55,10 @@ kable(opmlocs)
 
 Sources: 
 
-OPM 		"/data/doc/opm/SRC.txt"
-Buzzfeed 	"/data/doc/opm-foia/Buzzfeed-20170524-Were Sharing A Vast Trove Of Federal Payroll Records.pdf"
-Cornell-FOIA 2013 "/data/doc/opm-foia/20131126154301380.pdf"
-Cornell-FOIA 2016 "/data/doc/opm-foia/OPM letter FOIA response 201611.pdf"
+  + OPM 		"/data/doc/opm/SRC.txt"
+  + Buzzfeed 	"/data/doc/opm-foia/Buzzfeed-20170524-Were Sharing A Vast Trove Of Federal Payroll Records.pdf"
+  + Cornell-FOIA 2013 "/data/doc/opm-foia/20131126154301380.pdf"
+  + Cornell-FOIA 2016 "/data/doc/opm-foia/OPM letter FOIA response 201611.pdf"
 Fedscope 	"/data/doc/opm/FS_Employment_Sep2011_Documentation.pdf"
 
 

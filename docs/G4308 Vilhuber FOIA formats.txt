@@ -1,0 +1,91 @@
+﻿Status Extract Format
+
+CBSA was added to EHRI/CPDF files in 2005 and were generated in historical files from December 1994 – December 2004. The similar predecessor data elements MSA-Retro is included. 
+
+Data Element               Start     End  Length  
+
+PSEUDO-ID                     1       9       9  
+AGENCY/SUBELEMENT            10      13       4  
+DUTY STATION                 14      22       9  
+AGE LEVEL                    23      27       5  
+SEX                          28      28       1  
+GS-EQUIVALENT GRADE          29      30       2  
+LENGTH OF SERVICE            31      35       5  nn.nn
+OCCUPATION                   36      39       4  
+OCCUPATIONAL CATEGORY        40      40       1  
+PAY PLAN                     41      42       2  
+GRADE                        43      44       2  
+ADJUSTED BASIC PAY           45      50       6  
+TYPE APPOINTMENT             51      52       2  
+WORK SCHEDULE                53      53       1  
+CBSA                         54      58       5  
+MSA-RETRO                    59      62       4  
+EDUCATION LEVEL              63      64       2  
+FILE DATE                    65      70       6  yyyymm
+START DATE                   71      78       8  yyyymmdd 
+END DATE                     79      86       8  yyyymmdd
+
+
+
+CPDF Standard Code Table Record Format
+
+Data Element				Type		Length 	Position
+
+SCT Table ID               	  	Char		    2	  	1-2
+Data Code	                   	  	Char		    9	 	3-11
+	Date Code in Use From 1		Num		    6		12-17		yyyymm
+	Date Code in Use Until 1		Num		    6		18-23		yyyymm
+	Date Code in Use From 2		Num		    6		24-29		yyyymm
+	Date Code in Use Until 2		Num		    6		30-35		yyyymm
+	Translation 1				Char		   40		36-75
+	Date Trans in Use From 1 	 	Num		    6		76-81		yyyymm
+	Date Trans in Use Until 1		Num		    6		82-87		yyyymm
+Translation 2				Char		   40		88-127
+	Date Trans in Use From 2 	 	Num		    6		128-133	yyyymm
+	Date Trans in Use Until 2		Num		    6		134-139	yyyymm 
+Translation 3				Char		   40		140-179
+	Date Trans in Use From 3 	 	Num		    6		180-185	yyyymm
+	Date Trans in Use Until 3		Num		    6		186-191	yyyymm 
+Translation 4				Char		   40		192-231
+	Date Trans in Use From 4 	 	Num		    6		232-237	yyyymm
+	Date Trans in Use Until 4		Num		    6		238-243	yyyymm 
+Translation 5				Char		   40		244-283
+	Date Trans in Use From 5 	 	Num		    6		284-289	yyyymm
+	Date Trans in Use Until 5		Num		    6		290-295	yyyymm 
+Translation 6				Char		   40		296-335
+	Date Trans in Use From 6 	 	Num		    6		336-341	yyyymm
+	Date Trans in Use Until 6		Num		    6		342-347	yyyymm
+
+Note 1:	Data Code may contain from 1 to 9 significant characters, depending on which data element code set is searched. SCT Table ID identifies the corresponding data element type:
+
+AG – Agency with Subelement (See Note 3)   
+EV – Educational Level        
+GF – Occupational Category  
+JA – CBSA (Core Based Statistical Area) (01/2005-present)
+JZ – MSA (Metropolitan Statistical Area) (through 12/2004)                     
+LA – Pay Plan
+VK – Grade (see Note 5)                  	      
+VM – Type of Appointment           
+VX – Duty Station (See Note 4)        
+WS - Gender
+XB – Occupation   
+XS – Sex
+
+Note 2:	Most code sets (identified by SCT Table ID) use a Data Code validity date range to identify the time frame in which the code is/was valid for CPDF submissions. A value of “999999” in the Date Code in Use Until element indicates the code is currently valid. For a retrieved Data Code to be valid, the associated search date must be greater than or equal to an occurrence of Date Code in Use From and must be less than the corresponding occurrence of Date Code in Use Until.
+		Translations use similar validity dates to identify the time period a particular translation is valid. The most recent translation is in Translation 1, the previous translation is in Translation 2, etc.
+		The Date in use from/until values are zeros for these system-generated code sets that do not use Data Code validity date ranges:  GF, JA, JZ, VM.     
+
+Note 3:	The “AG” group of codes includes both Agency and Subelement titles (i.e. Department of the Air Force, Air National Guard). Generally if the third and fourth position of the 4-character agency/subelement code are “00”, the code refers to an independent agency (OM00 = Office of Personnel Management). If those positions are spaces, the code refers to the main title of an agency or department that has additional subelements.
+		Exception:  In mid-2011, the Department of Energy began using agency/subelement code DNFE for the Federal Energy Regulatory Commission and DN00 for all other Energy components.
+
+Note 4:	Duty Station codes are composed of State code (pos 1-2), City code (pos 3-6), and County code (pos 7-9). Translations for States, Countries, and Territories will have zeros in positions 3-9 of the Duty Station code (“010000000” = Alabama, “RQ0000000” = Puerto Rico). Translations for Counties will have zeros in positions 3-6 (“010000019” = Cherokee County, Alabama, “480000113” is Dallas County, Texas). Translations for Cities in the U.S. will have non-zero values in all three components of the Duty Station code (“011730089” is Huntsville, Alabama).
+
+Note 5:	Grade codes use two components to identify translations for employees with non-numeric grades in Pay Plans AL, AF, FA, FE, FP, GG, and TP. The first two positions of Data Code contain the pay plan code and positions 3-4 contain the Grade value as used in individual Status or Dynamics records. The following are example valid Grade Data Codes and translations: 
+**00  	NOT APPLICABLE    
+AFAA   	GRADE AA          
+AFBB		GRADE BB          
+GGSL 	SENIOR LEVEL                           
+TPAA 	SUBSTITUTE TEACHERS - ELEM & SECONDARY 
+TPBA		JROTC - ELEMENTARY AND SECONDARY       
+
+
