@@ -1,0 +1,14 @@
+#!/bin/bash
+#PBS -N merge
+#PBS -l mem=500000mb
+#PBS -l walltime=96:00:00
+#PBS -q premium
+#PBS -j oe
+#PBS -m ae
+# The following line should Always be included
+source /etc/profile.d/modules.sh
+module load stata
+cd $PBS_O_WORKDIR
+stata -b 02_merge_opm.do
+
+
