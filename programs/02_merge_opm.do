@@ -37,7 +37,7 @@ III. Merge (II) with Buzzfeed
 *Run for all annual files
 forval yr=2000/2012 {
 
-capture log using merge_opm_`yr'.log
+capture log using merge_opm_`yr'.log, replace
 /********************************************************************************
 |																				|
 |	I Merging FOIA 2013 and FOIA 2016		|
@@ -60,6 +60,7 @@ replace unique13 = 1 if foia13_dup == .
 by foia16_dup, sort: gen unique16 = _n
 replace unique16 = 1 if foia16_dup == .
 
+di "*** FOIA16 `yr' ***"
 rename _merge merge1
 tab merge1
 tab merge1 if (unique13 ==1 | unique16==1)  //this provides all ambiguous matches between foia13 and foia16; includes matches where the varlist doesn't uniquely identify observations
@@ -87,6 +88,7 @@ replace unique16 = 1 if foia16_dup == .
 by feds_dup, sort: gen uniquefeds = _n 
 replace uniquefeds = 1 if feds_dup == .
 
+di "*** Fedscope `yr' ***"
 rename _merge merge2
 tab merge2
 tab merge2 if (unique13 ==1 | unique16==1 | uniquefeds== 1) //this provides all ambiguous matches between foia13 and foia16; includes matches where the varlist doesn't uniquely identify observations
@@ -117,6 +119,7 @@ replace uniquefeds = 1 if feds_dup == .
 by buzz_dup, sort: gen uniquebuzz = _n 
 replace uniquebuzz = 1 if buzz_dup == .
 
+di "*** Buzzfeed `yr' ***"
 rename _merge merge3
 tab merge3
 tab merge3 if (unique13 ==1 | unique16==1 | uniquefeds== 1 | uniquebuzz== 1) //this provides all ambiguous matches between foia13 and foia16; includes matches where the varlist doesn't uniquely identify observations
