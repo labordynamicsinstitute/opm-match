@@ -9,11 +9,10 @@ LDI
 //Downloads
 
 //Globals
-global initials "DL"
-global date: display %tdCCYYNNDD date(c(current_date), "DMY")
-global data /home/ssgprojects/project0002/cdl77/opm-match/inputs
-global work /home/ssgprojects/project0002/cdl77/opm-match/programs
-global outputs /home/ssgprojects/project0002/cdl77/opm-match/outputs
+do config.do
+global data "$basedir/inputs"
+global work "$basedir/programs"
+global outputs "$basedir/outputs"
 cd $work
 set more off
 
@@ -40,6 +39,7 @@ I only keep 2000-2012 samples for merging (shared across all 4 datasets)
 capture log using foia13.log
 clear
 use $data/opmfoia13_all.dta, clear
+gen q_date =yq(year,quarter)
 
 *Recode to common value 
 **i.Recoding age
@@ -142,6 +142,32 @@ replace paylvl ="" if adj_pay ==.
 
 gen loc = substr(duty_sta,1,2)
 
+**iv. Create Longitudinal variables
+*length of attachment (tenure) to agency
+by id agency (q_date), sort: egen tenure_firstyr = min(q_date) if id !="#########"
+gen tenure = q_date-tenure_firstyr+1 if id !="#########"
+drop tenure_firstyr
+
+*length of attachment to duty station (posting_length)
+by id duty_sta (q_date), sort: egen duty_firstyr = min(q_date) if id !="#########"
+gen posting_length = q_date-duty_firstyr+1 if id !="#########"
+drop duty_firstyr
+
+*length of occupation (though that SHOULD be the same as tenure)
+by id occ (q_date), sort: egen occ_firstyr = min(q_date) if id !="#########"
+gen tenure_occ = q_date-occ_firstyr+1 if id !="#########"
+drop occ_firstyr
+
+*quarter-on-quarter earnings change (or earnings-level change)
+//the 1st qoq earnings change will be missing, 
+by id (q_date), sort: gen qoq_earn_change = adj_pay -adj_pay[_n-1] if id !="#########"
+
+
+
+
+
+saveold $data/foia13_formatted.dta, replace
+
 forval yr=2000/2012 {
     preserve
     keep if year ==`yr'
@@ -159,8 +185,27 @@ capture log using foia16.log
 
 clear
 use $data/opmfoia16_all.dta, clear
+gen q_date =yq(year,quarter)
 
 gen loc = substr(duty_sta,1,2)
+
+**iv. Create Longitudinal variables (no qoq earn change)
+*length of attachment (tenure) to agency
+by id agency (q_date), sort: egen tenure_firstyr = min(q_date) if id !="#########"
+gen tenure = q_date-tenure_firstyr+1 if id !="#########"
+drop tenure_firstyr
+
+*length of attachment to duty station (posting_length)
+by id duty_sta (q_date), sort: egen duty_firstyr = min(q_date) if id !="#########"
+gen posting_length = q_date-duty_firstyr+1 if id !="#########"
+drop duty_firstyr
+
+*length of occupation (though that SHOULD be the same as tenure)
+by id occ (q_date), sort: egen occ_firstyr = min(q_date) if id !="#########"
+gen tenure_occ = q_date-occ_firstyr+1 if id !="#########"
+drop occ_firstyr
+
+saveold $data/foia16_formatted.dta, replace
 
 forval yr=2000/2012 {
     
@@ -179,6 +224,7 @@ capture log close
 capture log using feds.log
 clear
 use $data/opmfeds_all.dta, clear
+gen q_date =yq(year,quarter)
 
 *Rename and Split Fedscope vars 
 gen pay_plan = substr(ppgrd,1,2)
@@ -260,6 +306,11 @@ replace occ_cat = "P" if occ_cat == "1"
 replace occ_cat = "T" if occ_cat == "3"
 replace occ_cat = "*" if occ_cat == "9"
 
+**iii. Create Longitudinal variables (no id to identify individuals)
+
+
+
+saveold $data/feds_formatted.dta, replace
 
 forval yr=2000/2012 {
     preserve
@@ -278,7 +329,7 @@ capture log close
 capture log using feds.log
 clear
 use $data/opmbuzz99_all.dta, clear
-
+gen q_date =yq(year,quarter)
 
 **dropping redundant/unused fields to save memory
 drop id
@@ -315,6 +366,28 @@ replace loslvl = "8" if loslvl == "25-29"
 replace loslvl = "9" if loslvl == "30-34" | loslvl == "35+"
 replace loslvl = "" if loslvl == "UNSP"
 
+**iv. Create Longitudinal variables
+*length of attachment (tenure) to agency
+by name agency (q_date), sort: egen tenure_firstyr = min(q_date) if (strmatch(name, "NAME WITHHELD*") == 0 & strmatch(name, "NAME UNKNOWN") == 0)
+gen tenure = q_date-tenure_firstyr+1 if (strmatch(name, "NAME WITHHELD*") == 0 & strmatch(name, "NAME UNKNOWN") == 0)
+drop tenure_firstyr
+
+*length of attachment to duty station (posting_length)
+by name duty_sta (q_date), sort: egen duty_firstyr = min(q_date) if (strmatch(name, "NAME WITHHELD*") == 0 & strmatch(name, "NAME UNKNOWN") == 0)
+gen posting_length = q_date-duty_firstyr+1 if (strmatch(name, "NAME WITHHELD*") == 0 & strmatch(name, "NAME UNKNOWN") == 0)
+drop duty_firstyr
+
+*length of occupation (though that SHOULD be the same as tenure)
+by name occ (q_date), sort: egen occ_firstyr = min(q_date) if (strmatch(name, "NAME WITHHELD*") == 0 & strmatch(name, "NAME UNKNOWN") == 0)
+gen tenure_occ = q_date-occ_firstyr+1 if (strmatch(name, "NAME WITHHELD*") == 0 & strmatch(name, "NAME UNKNOWN") == 0)
+drop occ_firstyr
+
+*quarter-on-quarter earnings change (or earnings-level change)
+//the 1st qoq earnings change will be missing, 
+by name (q_date), sort: gen qoq_earn_change = adj_pay -adj_pay[_n-1] if (strmatch(name, "NAME WITHHELD*") == 0 & strmatch(name, "NAME UNKNOWN") == 0)
+
+
+saveold $data/buzz_formatted.dta, replace
 
 forval yr=2000/2012 {
     preserve
