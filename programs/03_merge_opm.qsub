@@ -9,6 +9,6 @@
 source /etc/profile.d/modules.sh
 module load stata
 cd $PBS_O_WORKDIR
-stata -b 02_merge_opm.do
+stata -b 03_merge_opm.do
 
 

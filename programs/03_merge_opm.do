@@ -9,11 +9,10 @@ LDI
 //Downloads
 
 //Globals
-global initials "DL"
-global date: display %tdCCYYNNDD date(c(current_date), "DMY")
-global data /home/ssgprojects/project0002/cdl77/opm-match/inputs
-global work /home/ssgprojects/project0002/cdl77/opm-match/programs
-global outputs /home/ssgprojects/project0002/cdl77/opm-match/outputs
+do config.do
+global data "$basedir/inputs"
+global work "$basedir/programs"
+global outputs "$basedir/outputs"
 cd $work
 set more off
 
@@ -33,6 +32,7 @@ III. Merge (II) with Buzzfeed
 
 
 */
+timer on 9
 
 *Run for all annual files
 forval yr=2000/2012 {
@@ -53,7 +53,7 @@ merge m:1 year quarter agency duty_sta age loslvl occ occ_cat pay_plan grade pay
 */
 
 //Since the varlist does not uniquely identify observations, I'm running a joinby command
-joinby year quarter agency duty_sta age loslvl occ occ_cat pay_plan grade paylvl appoint schedule cbsa educ_c file_date start_date end_date using $data/foia16_`yr'.dta, unmatched(both)
+joinby $varlist1 using $data/foia16_`yr'.dta, unmatched(both)
 //I identify duplicates created from joinby, and ignore them as "exact" matches
 by foia13_dup, sort: gen unique13 = _n 
 replace unique13 = 1 if foia13_dup == .
@@ -79,7 +79,7 @@ saveold $outputs/merge_opm_`yr'.dta, replace
 timer on 2
 
 //Since the varlist does not uniquely identify observations, I'm running a joinby command
-joinby year quarter agency loc age sex gs occ occ_cat pay_plan grade appoint schedule adj_pay using $data/feds_`yr'.dta, unmatched(both)
+joinby $varlist2 using $data/feds_`yr'.dta, unmatched(both)
 //I identify duplicates created from joinby, and ignore them as "exact" matches
 by foia13_dup, sort: gen unique13 = _n 
 replace unique13 = 1 if foia13_dup == .
@@ -107,7 +107,7 @@ saveold $outputs/merge_opm_`yr'.dta, replace
 timer on 3
 
 //Since the varlist does not uniquely identify observations, I'm running a joinby command
-joinby year quarter name agency duty_sta age educ_c pay_plan grade loslvl occ occ_cat appoint schedule adj_pay using $data/buzz_`yr'.dta, unmatched(both)
+joinby $varlist2 using $data/buzz_`yr'.dta, unmatched(both)
 //I identify duplicates created from joinby, and ignore them as "exact" matches
 by foia13_dup, sort: gen unique13 = _n 
 replace unique13 = 1 if foia13_dup == .
@@ -135,3 +135,6 @@ timer list
 capture log close
 
 }
+
+timer off 9
+timer list 9
