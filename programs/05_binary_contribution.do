@@ -33,7 +33,7 @@ III. Merge (II) with Buzzfeed
 timer on 9
 
 *Run for all annual files
-forval yr=2005/2005 {
+forval yr=2000/2012 {
 
 /********************************************************************************
 |																				|
@@ -63,7 +63,10 @@ foreach var in $bvarlist1 {
 }
 keep var contribution
 keep if var != ""
-export delimited $outputs/contribution_binary_merge1, replace
+gen year = `yr'
+
+saveold $outputs/contribution_binary_merge1_`yr', replace
+
 
 timer off 1
 
@@ -95,7 +98,10 @@ foreach var in $bvarlist2 {
 }
 keep var contribution
 keep if var != ""
-export delimited $outputs/contribution_binary_merge2, replace
+gen year = `yr'
+
+saveold $outputs/contribution_binary_merge2_`yr', replace
+
 
 timer off 2
 /********************************************************************************
@@ -126,11 +132,26 @@ foreach var in $bvarlist3 {
 }
 keep var contribution
 keep if var != ""
-export delimited $outputs/contribution_binary_merge3, replace
+gen year = `yr'
+
+saveold $outputs/contribution_binary_merge3_`yr', replace
+
 
 timer off 3
 timer list
 
-
 }
 
+/********************************************************************************
+|																				|
+|	IV Combine and export to CSV					|
+|																				|
+********************************************************************************/
+
+forval mm = 1/3 {
+	clear
+	forval yr=2000/2012 {
+		append $outputs/contribution_binary_merge`mm'_`yr'
+		export delimited $outputs/contribution_binary_merge`mm', replace
+	}
+}
