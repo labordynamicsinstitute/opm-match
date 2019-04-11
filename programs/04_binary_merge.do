@@ -129,19 +129,21 @@ gen merge3_buzz=.
 gen merge3_matched=.
 
 local i = 1
-forval yr=2000/2000 {
+forval yr=2000/2012 {
 replace year = `yr' in `i'
-replace merge1_foia13= `merge1_1_`yr'' 
-replace merge1_foia16= `merge1_2_`yr''
-replace merge1_matched= `merge1_3_`yr''
+replace merge1_foia13= `merge1_1_`yr''  in `i'
+replace merge1_foia16= `merge1_2_`yr'' in `i'
+replace merge1_matched= `merge1_3_`yr'' in `i'
 
-replace merge2_foia13= `merge2_1_`yr''
-replace merge2_feds= `merge2_2_`yr''
-replace merge2_matched= `merge2_3_`yr''
+replace merge2_foia13= `merge2_1_`yr'' in `i'
+replace merge2_feds= `merge2_2_`yr'' in `i'
+replace merge2_matched= `merge2_3_`yr'' in `i'
 
-replace merge3_foia13= `merge3_1_`yr''
-replace merge3_buzz= `merge3_2_`yr''
-replace merge3_matched= `merge3_3_`yr''
+replace merge3_foia13= `merge3_1_`yr'' in `i'
+replace merge3_buzz= `merge3_2_`yr'' in `i'
+replace merge3_matched= `merge3_3_`yr'' in `i'
+
+local i = `i' + 1
 }
 
 gen matched1 = merge1_matched/(merge1_foia13+merge1_foia16+merge1_matched)
@@ -149,6 +151,7 @@ gen matched2 = merge2_matched/(merge2_foia13+merge2_feds+merge2_matched)
 gen matched3 = merge3_matched/(merge3_foia13+merge3_buzz+merge3_matched)
 
 saveold $outputs/binary_merge_summary.dta, replace
+export delimited binary_merge_summary, replace
 
 timer off 9
 timer list 9
