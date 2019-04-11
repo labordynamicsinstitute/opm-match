@@ -10,9 +10,7 @@ LDI
 
 //Globals
 do config.do
-global data "$basedir/inputs"
-global work "$basedir/programs"
-global outputs "$basedir/outputs"
+
 cd $work
 set more off
 
@@ -107,7 +105,7 @@ saveold $outputs/merge_opm_`yr'.dta, replace
 timer on 3
 
 //Since the varlist does not uniquely identify observations, I'm running a joinby command
-joinby $varlist2 using $data/buzz_`yr'.dta, unmatched(both)
+joinby $varlist3 using $data/buzz_`yr'.dta, unmatched(both)
 //I identify duplicates created from joinby, and ignore them as "exact" matches
 by foia13_dup, sort: gen unique13 = _n 
 replace unique13 = 1 if foia13_dup == .
