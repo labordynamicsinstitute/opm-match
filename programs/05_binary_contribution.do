@@ -62,6 +62,7 @@ foreach var in $bvarlist1 {
     local i = `i' +1
 }
 keep var contribution
+keep if var != ""
 export delimited $outputs/contribution_binary_merge1, replace
 
 timer off 1
@@ -78,7 +79,7 @@ gen var =""
 gen contribution =.
 local i = 1
 foreach var in $bvarlist2 {
-    local newlist = subinstr("$bvarlist1", "`var' ", "",1 )
+    local newlist = subinstr("$bvarlist2", "`var' ", "",1 )
     duplicates tag `newlist', generate(dups_old)
     duplicates tag $bvarlist2, generate(dups_new)
     count if dups_old ==0
@@ -93,6 +94,7 @@ foreach var in $bvarlist2 {
     local i = `i' +1
 }
 keep var contribution
+keep if var != ""
 export delimited $outputs/contribution_binary_merge2, replace
 
 timer off 2
@@ -108,7 +110,7 @@ gen var =""
 gen contribution =.
 local i = 1
 foreach var in $bvarlist3 {
-    local newlist = subinstr("$bvarlist1", "`var' ", "",1 )
+    local newlist = subinstr("$bvarlist3", "`var' ", "",1 )
     duplicates tag `newlist', generate(dups_old)
     duplicates tag $bvarlist3, generate(dups_new)
     count if dups_old ==0
@@ -123,6 +125,7 @@ foreach var in $bvarlist3 {
     local i = `i' +1
 }
 keep var contribution
+keep if var != ""
 export delimited $outputs/contribution_binary_merge3, replace
 
 timer off 3
