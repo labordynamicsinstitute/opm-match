@@ -10,9 +10,6 @@ LDI
 
 //Globals
 do config.do
-global data "$basedir/inputs"
-global work "$basedir/programs"
-global outputs "$basedir/outputs"
 cd $work
 set more off
 
@@ -158,10 +155,26 @@ by id occ (q_date), sort: egen occ_firstyr = min(q_date) if id !="#########"
 gen tenure_occ = q_date-occ_firstyr+1 if id !="#########"
 drop occ_firstyr
 
-*quarter-on-quarter earnings change (or earnings-level change)
+*quarter-on-quarter earnings change 
 //the 1st qoq earnings change will be missing, 
 by id (q_date), sort: gen qoq_earn_change = adj_pay -adj_pay[_n-1] if id !="#########"
 
+/*
+SALARY LEVEL CHANGE RANGE
+ Range = (#-1)*10000 to (#)*10000
+ A# -> Upper Range + 10000
+ Z# -> Upper Range unknown
+*/
+*quarter-on-quarter earnings-level change
+//the 1st qoq earnings change will be missing, 
+destring paylvl, gen(numpaylvl)
+by id (q_date), sort: gen qoq_earn_change_lvl = numpaylvl -numpaylvl[_n-1] if id !="#########"
+tostring qoq_earn_change_lvl, replace
+replace qoq_earn_change_lvl = "" if qoq_earn_change_lvl == "."
+drop numpaylvl
+replace qoq_earn_change_lvl = "A" +qoq_earn_change_lvl  if paylvl[_n-1] == "1"
+replace qoq_earn_change_lvl = "Z" +qoq_earn_change_lvl  if paylvl == "18" & qoq_earn_change_lvl !=""
+saveold $data/foia16_formatted.dta, replace
 
 
 
@@ -205,6 +218,21 @@ by id occ (q_date), sort: egen occ_firstyr = min(q_date) if id !="#########"
 gen tenure_occ = q_date-occ_firstyr+1 if id !="#########"
 drop occ_firstyr
 
+/*
+SALARY LEVEL CHANGE RANGE
+ Range = (#-1)*10000 to (#)*10000
+ A# -> Upper Range + 10000
+ Z# -> Upper Range unknown
+*/
+*quarter-on-quarter earnings-level change
+//the 1st qoq earnings change will be missing, 
+destring paylvl, gen(numpaylvl)
+by id (q_date), sort: gen qoq_earn_change_lvl = numpaylvl -numpaylvl[_n-1] if id !="#########"
+tostring qoq_earn_change_lvl, replace
+replace qoq_earn_change_lvl = "" if qoq_earn_change_lvl == "."
+drop numpaylvl
+replace qoq_earn_change_lvl = "A" +qoq_earn_change_lvl  if paylvl[_n-1] == "1"
+replace qoq_earn_change_lvl = "Z" +qoq_earn_change_lvl  if paylvl == "18" & qoq_earn_change_lvl !=""
 saveold $data/foia16_formatted.dta, replace
 
 forval yr=2000/2012 {
