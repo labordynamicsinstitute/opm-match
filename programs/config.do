@@ -7,22 +7,22 @@ global outputs "$basedir/outputs"
 
 *varlists
 *merge varlist for FOIA 2013 with FOIA 2016
-global varlist1 "year quarter agency duty_sta loc age loslvl occ occ_cat pay_plan grade paylvl appoint schedule cbsa educ_c tenure posting_length tenure_occ"
+global varlist1 "year quarter paylvl agency duty_sta age loslvl occ grade cbsa educ_c tenure posting_length tenure_occ loc occ_cat pay_plan appoint schedule"
 
 *merge varlist for merge1 with Fedscope
-global varlist2 "year quarter agency loc age sex gs occ occ_cat pay_plan grade appoint schedule adj_pay "
+global varlist2 "year quarter adj_pay agency loc age sex gs occ grade occ_cat pay_plan appoint schedule "
 
 *merge varlist for merge2 with Buzzfeed
-global varlist3tab "year quarter agency duty_sta age educ_c pay_plan grade loslvl occ occ_cat appoint schedule adj_pay tenure posting_length tenure_occ qoq_earn_change" //dropped name
+global varlist3tab "year quarter adj_pay agency duty_sta age educ_c grade loslvl occ tenure posting_length tenure_occ qoq_earn_change occ_cat pay_plan appoint schedule" //dropped name
 
-global varlist3 "year quarter name agency duty_sta age educ_c pay_plan grade loslvl occ occ_cat appoint schedule adj_pay tenure posting_length tenure_occ qoq_earn_change"
+global varlist3 "year quarter name adj_pay agency duty_sta age educ_c grade loslvl occ tenure posting_length tenure_occ qoq_earn_change occ_cat pay_plan appoint schedule"
 
 *varlists for binary FOIA 2013 merge
-*merge bvarlist for FOIA 2013 with FOIA 2016
-global varlist1 "year quarter agency duty_sta loc age loslvl occ occ_cat pay_plan grade paylvl appoint schedule cbsa educ_c tenure posting_length tenure_occ qoq_earn_change_lvl"
+*merge varlist for FOIA 2013 with FOIA 2016
+global bvarlist1 "year quarter paylvl agency duty_sta age loslvl occ grade cbsa educ_c tenure posting_length tenure_occ qoq_earn_change_lvl loc occ_cat pay_plan appoint schedule"
 
-*merge bvarlist for FOIA 2013 with Fedscope
-global varlist2 "year quarter agency loc age sex gs occ occ_cat pay_plan grade appoint schedule adj_pay"
+*merge varlist for FOIA 2013 with Fedscope
+global bvarlist2 "year quarter adj_pay agency loc age sex gs occ grade occ_cat pay_plan appoint schedule"
 
-*merge bvarlist for FOIA 2013 with Buzzfeed
-global varlist3 "year quarter agency duty_sta age educ_c pay_plan grade loslvl occ occ_cat appoint schedule adj_pay tenure posting_length tenure_occ qoq_earn_change"
+*merge varlist for FOIA 2013 with Buzzfeed
+global bvarlist3 "year quarter adj_pay agency duty_sta age educ_c grade loslvl occ tenure posting_length tenure_occ qoq_earn_change occ_cat pay_plan appoint schedule"
