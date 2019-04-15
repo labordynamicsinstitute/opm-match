@@ -157,8 +157,9 @@ drop occ_firstyr
 
 *quarter-on-quarter earnings change 
 //the 1st qoq earnings change will be missing, 
+by id (q_date), sort: gen q_date2 = q_date - q_date[_n-1]
 by id (q_date), sort: gen qoq_earn_change = adj_pay -adj_pay[_n-1] if id !="#########"
-
+replace qoq_earn_change = . if q_date2 > 1 & q_date2 != .
 /*
 SALARY LEVEL CHANGE RANGE
  Range = (#-1)*10000 to (#)*10000
@@ -174,6 +175,8 @@ replace qoq_earn_change_lvl = "" if qoq_earn_change_lvl == "."
 drop numpaylvl
 replace qoq_earn_change_lvl = "A" +qoq_earn_change_lvl  if paylvl[_n-1] == "1"
 replace qoq_earn_change_lvl = "Z" +qoq_earn_change_lvl  if paylvl == "18" & qoq_earn_change_lvl !=""
+replace qoq_earn_change_lvl = "" if q_date2 > 1 & q_date2 != .
+drop q_date2
 saveold $data/foia16_formatted.dta, replace
 
 
@@ -226,6 +229,7 @@ SALARY LEVEL CHANGE RANGE
 */
 *quarter-on-quarter earnings-level change
 //the 1st qoq earnings change will be missing, 
+by id (q_date), sort: gen q_date2 = q_date - q_date[_n-1]
 destring paylvl, gen(numpaylvl)
 by id (q_date), sort: gen qoq_earn_change_lvl = numpaylvl -numpaylvl[_n-1] if id !="#########"
 tostring qoq_earn_change_lvl, replace
@@ -233,6 +237,8 @@ replace qoq_earn_change_lvl = "" if qoq_earn_change_lvl == "."
 drop numpaylvl
 replace qoq_earn_change_lvl = "A" +qoq_earn_change_lvl  if paylvl[_n-1] == "1"
 replace qoq_earn_change_lvl = "Z" +qoq_earn_change_lvl  if paylvl == "18" & qoq_earn_change_lvl !=""
+replace qoq_earn_change_lvl = "" if q_date2 > 1 & q_date2 != .
+drop q_date2
 saveold $data/foia16_formatted.dta, replace
 
 forval yr=2000/2012 {
@@ -411,10 +417,11 @@ gen tenure_occ = q_date-occ_firstyr+1 if (strmatch(name, "NAME WITHHELD*") == 0 
 drop occ_firstyr
 
 *quarter-on-quarter earnings change (or earnings-level change)
+by id (q_date), sort: gen q_date2 = q_date - q_date[_n-1]
 //the 1st qoq earnings change will be missing, 
 by name (q_date), sort: gen qoq_earn_change = adj_pay -adj_pay[_n-1] if (strmatch(name, "NAME WITHHELD*") == 0 & strmatch(name, "NAME UNKNOWN") == 0)
-
-
+replace qoq_earn_change = . if q_date2 > 1 & q_date2 != .
+drop q_date2
 saveold $data/buzz_formatted.dta, replace
 
 forval yr=2000/2012 {
