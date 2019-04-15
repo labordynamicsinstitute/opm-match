@@ -113,3 +113,33 @@ We would want to leverage the uncertainty in the linkage for tabulation purposes
 
 ![graph](RB 033-2018-08-16 17.12.36.jpg)
 
+# Merge Algorithm
+
+## 01_format.do
+
+Format and recode all OPM datas into comparable files. Created longitudinal variables of tenure to agency, posting length to duty station, tenure to occupation, quarter-over-quarter earnings change. 
+
+Note: With 2 datasets with different levels of data protection, the most protect format is used for merge. I.e. topcoded salary levels vs actual salary
+
+## 02_duplicate_tab.do
+
+Tabulates duplicates of given specified varlists for FOIA 2013 (Cornell1), FOIA 2016 (Cornell2), Fedscope, and Buzzfeed. The 3 varlists are all shared variables between FOIA 2013-FOIA 2016, FOIA 2013-Fedscope, and FOIA 2013-Buzzfeed.
+
+## 03_merge_opm.do
+
+The OPM datasets are merged iteratively starting with FOIA 2013 with FOIA 2016 (I). Then merge result(I) with Fedscope. Then merge result(II) with Buzzfeed. The 
+
+Note: Merge m:m is used because a full outer join is not needed. It is fine to lose duplicates in this exercise. The merges are partitioned in to annual files due to the exponential increase to run time from file size.
+
+## 04_binary_merge.do
+
+3 separate merge files are created using FOIA 2013 as the base: FOIA 2013-FOIA 2016, FOIA 2013-Fedscope, and FOIA 2013-Buzzfeed.
+
+Note: Merge m:m is used because a full outer join is not needed. It is fine to lose duplicates in this exercise. The merges are partitioned in to annual files due to the exponential increase to run time from file size.
+
+## 05_binary_contribution.do
+
+A CSV file showing the merge variables in 04 by importance in terms of contribution to uniquness and matching is generated. 
+
+Note: Relative contribution to uniqueness is measured by iteratively removing and adding one variable from the merge varlist. The changes in the numbers of nonduplicates from removing and adding the variable indicates it's relative contribution to uniqueness. A larger increase in nonduplicates indicates larger relative contribution to uniqueness.
+
