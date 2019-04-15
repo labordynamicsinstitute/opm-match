@@ -151,7 +151,7 @@ timer list
 forval mm = 1/3 {
 	clear
 	forval yr=2000/2012 {
-		append $outputs/contribution_binary_merge`mm'_`yr'
-		export delimited $outputs/contribution_binary_merge`mm', replace
+		append using $outputs/contribution_binary_merge`mm'_`yr'		
 	}
+	export delimited $outputs/contribution_binary_merge`mm', replace
 }
