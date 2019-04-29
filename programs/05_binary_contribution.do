@@ -34,14 +34,14 @@ timer on 9
 
 *Run for all annual files
 forval yr=2000/2012 {
-
+forval qr=1/4 {
 /********************************************************************************
 |																				|
 |	I Check relative contribution of variables FOIA 2013 and FOIA 2016		|
 |																				|
 ********************************************************************************/	
 timer on 1
-use $outputs/binary_merge1_`yr'.dta, clear
+use $outputs/binary_merge1_y`yr'q`qr.dta, clear
 
 gen var =""
 gen contribution =.
@@ -64,8 +64,9 @@ foreach var in $bvarlist1 {
 keep var contribution
 keep if var != ""
 gen year = `yr'
+gen quarter = `qr'
 
-saveold $outputs/contribution_binary_merge1_`yr', replace
+saveold $outputs/contribution_binary_merge1_y`yr'q`qr, replace
 
 
 timer off 1
@@ -76,7 +77,7 @@ timer off 1
 |																				|
 ********************************************************************************/
 timer on 2
-use $outputs/binary_merge2_`yr'.dta, clear
+use $outputs/binary_merge2_y`yr'q`qr.dta, clear
 
 gen var =""
 gen contribution =.
@@ -99,8 +100,9 @@ foreach var in $bvarlist2 {
 keep var contribution
 keep if var != ""
 gen year = `yr'
+gen quarter = `qr'
 
-saveold $outputs/contribution_binary_merge2_`yr', replace
+saveold $outputs/contribution_binary_merge2_y`yr'q`qr, replace
 
 
 timer off 2
@@ -110,7 +112,7 @@ timer off 2
 |																				|
 ********************************************************************************/
 timer on 3
-use $outputs/binary_merge3_`yr', clear
+use $outputs/binary_merge3_y`yr'q`qr, clear
 
 gen var =""
 gen contribution =.
@@ -133,13 +135,14 @@ foreach var in $bvarlist3 {
 keep var contribution
 keep if var != ""
 gen year = `yr'
+gen quarter = `qr'
 
-saveold $outputs/contribution_binary_merge3_`yr', replace
+saveold $outputs/contribution_binary_merge3_y`yr'q`qr, replace
 
 
 timer off 3
 timer list
-
+}
 }
 
 /********************************************************************************
@@ -151,7 +154,9 @@ timer list
 forval mm = 1/3 {
 	clear
 	forval yr=2000/2012 {
-		append using $outputs/contribution_binary_merge`mm'_`yr'		
+	    forval qr =1/4 {
+		append using $outputs/contribution_binary_merge`mm'_y`yr'q`qr	
+	    }		
 	}
 	export delimited $outputs/contribution_binary_merge`mm', replace
 }
