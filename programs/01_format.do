@@ -186,10 +186,11 @@ saveold $data/foia13_formatted.dta, replace
 
 forval yr=2000/2012 {
     preserve
-    keep if year ==`yr'
-    saveold $data/foia13_`yr'.dta, replace
-	restore
-    
+    forval qr=1/4 {
+	    keep if year ==`yr'& quarter == `qr'
+	    saveold $data/foia13_y`yr'q`qr'.dta, replace
+	    restore
+    }
 }    
 capture log close
 /********************************************************************************
@@ -241,13 +242,13 @@ replace qoq_earn_change_lvl = "" if q_date2 > 1 & q_date2 != .
 drop q_date2
 saveold $data/foia16_formatted.dta, replace
 
-forval yr=2000/2012 {
-    
-    preserve
-    keep if year ==`yr'
-    saveold $data/foia16_`yr'.dta, replace
-	restore
-   
+forval yr=2000/2012 {    
+    forval qr=1/4 {
+	    preserve
+	    keep if year ==`yr' & quarter == `qr'
+	    saveold $data/foia16_y`yr'q`qr'.dta, replace
+	    restore
+    }  
 }    
 capture log close
 /********************************************************************************
@@ -342,16 +343,17 @@ replace occ_cat = "*" if occ_cat == "9"
 
 **iii. Create Longitudinal variables (no id to identify individuals)
 
-
-
 saveold $data/feds_formatted.dta, replace
 
+
 forval yr=2000/2012 {
-    preserve
-    keep if year ==`yr'
-    saveold $data/feds_`yr'.dta, replace
-    restore
     
+    forval qr=1/4 {
+	    preserve
+	    keep if year ==`yr' & quarter == `qr'
+	    saveold $data/feds_y`yr'q`qr'.dta, replace
+	    restore
+    } 
 }   
 capture log close 
 
@@ -424,12 +426,14 @@ replace qoq_earn_change = . if q_date2 > 1 & q_date2 != .
 drop q_date2
 saveold $data/buzz_formatted.dta, replace
 
+
 forval yr=2000/2012 {
-    preserve
-    keep if year ==`yr'
-    saveold $data/buzz_`yr'.dta, replace
-    restore
-    
+    forval qr=1/4 {
+	    preserve
+	    keep if year ==`yr' & quarter == `qr'
+	    saveold $data/buzz_`y`yr'q`qr'.dta, replace
+	    restore
+    }
 }   
 capture log close 
 
