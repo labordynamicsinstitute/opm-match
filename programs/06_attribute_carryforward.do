@@ -44,7 +44,8 @@ clear
 use $data/foia16_formatted.dta, clear
 keep if q_date >= $start_date
 local obs_foia16 = _N
-di `obs_foia16'
+count if id_foia != "#########"
+local obs_foia16_nomiss = `r(N)'
 save $data/foia16_outsample.dta, replace
 
 *keep only the important attribute information of the merge
@@ -67,17 +68,24 @@ save $outputs/temp_foia16_attribute.dta, replace
 
 *keep latest attribute of an individual
 by id_foia (q_date), sort: keep if _n==_N
- 
+drop q_date
+
 *attach attribute to out-of-scope FOIA 2016 data
 merge 1:m id_foia16 using $data/foia16_outsample.dta
 
-	rename _merge merge_`1'_`2'
 	count if _merge ==1 //2000-2012 sample
 	local merge1 = `r(N)'
 	count if _merge ==2 //2013-2016 sample
 	local merge2 = `r(N)'
 	count if _merge ==3 //Matched
 	local merge3 = `r(N)'
+
+	count if _merge ==1 & id_foia != "#########"
+	local merge1_nomiss = `r(N)'
+	count if _merge ==2 & id_foia != "#########" 
+	local merge2_nomiss = `r(N)'
+	count if _merge ==3 & id_foia != "#########"
+	local merge3_nomiss = `r(N)'
 
 forval yr = 2000/2012 {
 forval qr = 1/4 {
@@ -99,6 +107,10 @@ gen merge_insample= `merge1'
 gen merge_outsample= `merge2'
 gen merge_matched= `merge3'
 gen matched_rate = merge_matched/(obs_foia16)
+gen merge_insample_nomiss= `merge1_nomiss'
+gen merge_outsample_nomiss= `merge2_nomiss'
+gen merge_matched_nomiss= `merge3_nomiss'
+gen matched_rate_nomiss = merge_matched_nomiss/(obs_foia16)
 
 saveold $outputs/carryforward_foia16_summary.dta, replace
 export delimited $outputs/carryforward_foia16_summary.csv, replace
