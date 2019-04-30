@@ -56,18 +56,18 @@ FOIA 2016 AGE LEVEL (YEARS)
   10          10-60-64
   11          11-65 OR ABOVE
 */
-
-replace age = "1" if age == "< 20"
-replace age = "2" if age == "20-24"
-replace age = "3" if age == "25-29"
-replace age = "4" if age == "30-34"
-replace age = "5" if age == "35-39"
-replace age = "6" if age == "40-44"
-replace age = "7" if age == "45-49"
-replace age = "8" if age == "50-54"
-replace age = "9" if age == "55-59"
-replace age = "10" if age == "60-64"
-replace age = "11" if age == "65+"
+gen age_common = ""
+replace age_common = "1" if age == "< 20"
+replace age_common = "2" if age == "20-24"
+replace age_common = "3" if age == "25-29"
+replace age_common = "4" if age == "30-34"
+replace age_common = "5" if age == "35-39"
+replace age_common = "6" if age == "40-44"
+replace age_common = "7" if age == "45-49"
+replace age_common = "8" if age == "50-54"
+replace age_common = "9" if age == "55-59"
+replace age_common = "10" if age == "60-64"
+replace age_common = "11" if age == "65+"
 
 **ii.Add service length level
 /*
@@ -83,16 +83,16 @@ LENGTH OF SERVICE LEVEL (YEARS)
   8           8-25 - 29
   9           9-30 OR ABOVE
 */
-gen loslvl = ""
-replace loslvl = "1" if service < 1
-replace loslvl = "2" if service >= 1 & service < 3
-replace loslvl = "3" if service >= 3 & service < 5
-replace loslvl = "4" if service >= 5 & service < 10
-replace loslvl = "5" if service >= 10 & service < 15
-replace loslvl = "6" if service >= 15 & service < 20
-replace loslvl = "7" if service >= 20 & service < 25
-replace loslvl = "8" if service >= 25 & service < 30
-replace loslvl = "9" if service >= 30 
+gen loslvl_common = ""
+replace loslvl_common = "1" if service < 1
+replace loslvl_common = "2" if service >= 1 & service < 3
+replace loslvl_common = "3" if service >= 3 & service < 5
+replace loslvl_common = "4" if service >= 5 & service < 10
+replace loslvl_common = "5" if service >= 10 & service < 15
+replace loslvl_common = "6" if service >= 15 & service < 20
+replace loslvl_common = "7" if service >= 20 & service < 25
+replace loslvl_common = "8" if service >= 25 & service < 30
+replace loslvl_common = "9" if service >= 30 
 
 **iii. Add pay level
 /*
@@ -116,28 +116,29 @@ SALARY LEVEL
   17          17-$170,000-$179,999
   18          18-$180,000 OR MORE
 */
-gen paylvl = ""
-replace paylvl ="1" if adj_pay < 20000
-replace paylvl ="2" if adj_pay >= 20000 & adj_pay <= 29999
-replace paylvl ="3" if adj_pay >= 30000 & adj_pay <= 39999
-replace paylvl ="4" if adj_pay >= 40000 & adj_pay <= 49999
-replace paylvl ="5" if adj_pay >= 50000 & adj_pay <= 59999
-replace paylvl ="6" if adj_pay >= 60000 & adj_pay <= 69999
-replace paylvl ="7" if adj_pay >= 70000 & adj_pay <= 79999
-replace paylvl ="8" if adj_pay >= 80000 & adj_pay <= 89999
-replace paylvl ="9" if adj_pay >= 90000 & adj_pay <= 99999
-replace paylvl ="10" if adj_pay >= 100000 & adj_pay <= 109999
-replace paylvl ="11" if adj_pay >= 110000 & adj_pay <= 119999
-replace paylvl ="12" if adj_pay >= 120000 & adj_pay <= 129999
-replace paylvl ="13" if adj_pay >= 130000 & adj_pay <= 139999
-replace paylvl ="14" if adj_pay >= 140000 & adj_pay <= 149999
-replace paylvl ="15" if adj_pay >= 150000 & adj_pay <= 159999
-replace paylvl ="16" if adj_pay >= 160000 & adj_pay <= 169999
-replace paylvl ="17" if adj_pay >= 170000 & adj_pay <= 179999
-replace paylvl ="18" if adj_pay >= 180000 
-replace paylvl ="" if adj_pay ==.	
+gen paylvl_common = ""
+replace paylvl_common ="1" if adj_pay < 20000
+replace paylvl_common ="2" if adj_pay >= 20000 & adj_pay <= 29999
+replace paylvl_common ="3" if adj_pay >= 30000 & adj_pay <= 39999
+replace paylvl_common ="4" if adj_pay >= 40000 & adj_pay <= 49999
+replace paylvl_common ="5" if adj_pay >= 50000 & adj_pay <= 59999
+replace paylvl_common ="6" if adj_pay >= 60000 & adj_pay <= 69999
+replace paylvl_common ="7" if adj_pay >= 70000 & adj_pay <= 79999
+replace paylvl_common ="8" if adj_pay >= 80000 & adj_pay <= 89999
+replace paylvl_common ="9" if adj_pay >= 90000 & adj_pay <= 99999
+replace paylvl_common ="10" if adj_pay >= 100000 & adj_pay <= 109999
+replace paylvl_common ="11" if adj_pay >= 110000 & adj_pay <= 119999
+replace paylvl_common ="12" if adj_pay >= 120000 & adj_pay <= 129999
+replace paylvl_common ="13" if adj_pay >= 130000 & adj_pay <= 139999
+replace paylvl_common ="14" if adj_pay >= 140000 & adj_pay <= 149999
+replace paylvl_common ="15" if adj_pay >= 150000 & adj_pay <= 159999
+replace paylvl_common ="16" if adj_pay >= 160000 & adj_pay <= 169999
+replace paylvl_common ="17" if adj_pay >= 170000 & adj_pay <= 179999
+replace paylvl_common ="18" if adj_pay >= 180000 
+replace paylvl_common ="" if adj_pay ==.	
 
 gen loc = substr(duty_sta,1,2)
+gen occ_cat_common = occ_cat
 
 **iv. Create Longitudinal variables
 *length of attachment (tenure) to agency
@@ -177,16 +178,11 @@ replace qoq_earn_change_lvl = "A" +qoq_earn_change_lvl  if paylvl[_n-1] == "1"
 replace qoq_earn_change_lvl = "Z" +qoq_earn_change_lvl  if paylvl == "18" & qoq_earn_change_lvl !=""
 replace qoq_earn_change_lvl = "" if q_date2 > 1 & q_date2 != .
 drop q_date2
-saveold $data/foia16_formatted.dta, replace
-
-
-
-
 saveold $data/foia13_formatted.dta, replace
 
-forval yr=2000/2012 {
-    preserve
+forval yr=2000/2012 {  
     forval qr=1/4 {
+	    preserve
 	    keep if year ==`yr'& quarter == `qr'
 	    saveold $data/foia13_y`yr'q`qr'.dta, replace
 	    restore
@@ -205,6 +201,16 @@ use $data/opmfoia16_all.dta, clear
 gen q_date =yq(year,quarter)
 
 gen loc = substr(duty_sta,1,2)
+
+**i.Recoding age
+gen age_common = age
+
+**ii.Add service length level
+gen loslvl_common = loslvl
+
+**iii. Add pay level
+gen paylvl_common = paylvl
+gen occ_cat_common = occ_cat
 
 **iv. Create Longitudinal variables (no qoq earn change)
 *length of attachment (tenure) to agency
@@ -240,6 +246,7 @@ replace qoq_earn_change_lvl = "A" +qoq_earn_change_lvl  if paylvl[_n-1] == "1"
 replace qoq_earn_change_lvl = "Z" +qoq_earn_change_lvl  if paylvl == "18" & qoq_earn_change_lvl !=""
 replace qoq_earn_change_lvl = "" if q_date2 > 1 & q_date2 != .
 drop q_date2
+ren id id_foia16
 saveold $data/foia16_formatted.dta, replace
 
 forval yr=2000/2012 {    
@@ -251,6 +258,8 @@ forval yr=2000/2012 {
     }  
 }    
 capture log close
+
+
 /********************************************************************************
 |																				|
 |	III.   Format Fedscope							|
@@ -283,18 +292,19 @@ Fedscope Data Definition https://www.fedscope.opm.gov/datadefn/
 An employee's age.  Age is displayed in five-year intervals, except for an initial interval of less than 20 years and a final interval of 65 years or more.
 */
 **i.Recoding age
-replace age = "1" if age == "A"
-replace age = "2" if age == "B"
-replace age = "3" if age == "C"
-replace age = "4" if age == "D"
-replace age = "5" if age == "E"
-replace age = "6" if age == "F"
-replace age = "7" if age == "G"
-replace age = "8" if age == "H"
-replace age = "9" if age == "I"
-replace age = "10" if age == "J"
-replace age = "11" if age == "K"
-replace age = "" if age == "Z"
+gen age_common = ""
+replace age_common = "1" if age == "A"
+replace age_common = "2" if age == "B"
+replace age_common = "3" if age == "C"
+replace age_common = "4" if age == "D"
+replace age_common = "5" if age == "E"
+replace age_common = "6" if age == "F"
+replace age_common = "7" if age == "G"
+replace age_common = "8" if age == "H"
+replace age_common = "9" if age == "I"
+replace age_common = "10" if age == "J"
+replace age_common = "11" if age == "K"
+replace age_common = "" if age == "Z"
 
 **ii.Recoding loslvl
 *no need to recode loslvl since, Fedscope has los and I will merge using that
@@ -324,6 +334,7 @@ replace loslvl = "9" if service >= 30
 
 
 **ii.Recoding occ_cat
+gen occ_cat_common = ""
 /*
 A=2
 B=6
@@ -333,13 +344,13 @@ P=1
 T=3
 *=9
 */
-replace occ_cat = "A" if occ_cat == "2"
-replace occ_cat = "B" if occ_cat == "6"
-replace occ_cat = "C" if occ_cat == "4"
-replace occ_cat = "O" if occ_cat == "5"
-replace occ_cat = "P" if occ_cat == "1"
-replace occ_cat = "T" if occ_cat == "3"
-replace occ_cat = "*" if occ_cat == "9"
+replace occ_cat_common = "A" if occ_cat == "2"
+replace occ_cat_common = "B" if occ_cat == "6"
+replace occ_cat_common = "C" if occ_cat == "4"
+replace occ_cat_common = "O" if occ_cat == "5"
+replace occ_cat_common = "P" if occ_cat == "1"
+replace occ_cat_common = "T" if occ_cat == "3"
+replace occ_cat_common = "*" if occ_cat == "9"
 
 **iii. Create Longitudinal variables (no id to identify individuals)
 
@@ -376,31 +387,35 @@ Fedscope Data Definition https://www.fedscope.opm.gov/datadefn/
 An employee's age.  Age is displayed in five-year intervals, except for an initial interval of less than 20 years and a final interval of 65 years or more.
 */
 **i.Recoding age
-replace age = "1" if age == "< 20"
-replace age = "2" if age == "20-24"
-replace age = "3" if age == "25-29"
-replace age = "4" if age == "30-34"
-replace age = "5" if age == "35-39"
-replace age = "6" if age == "40-44"
-replace age = "7" if age == "45-49"
-replace age = "8" if age == "50-54"
-replace age = "9" if age == "55-59"
-replace age = "10" if age == "60-64"
-replace age = "11" if age == "65-69" | age == "70-74" | age == "75+"
-replace age = "" if age == "UNSP"
+gen age_common = ""
+replace age_common = "1" if age == "< 20"
+replace age_common = "2" if age == "20-24"
+replace age_common = "3" if age == "25-29"
+replace age_common = "4" if age == "30-34"
+replace age_common = "5" if age == "35-39"
+replace age_common = "6" if age == "40-44"
+replace age_common = "7" if age == "45-49"
+replace age_common = "8" if age == "50-54"
+replace age_common = "9" if age == "55-59"
+replace age_common = "10" if age == "60-64"
+replace age_common = "11" if age == "65-69" | age == "70-74" | age == "75+"
+replace age_common = "" if age == "UNSP"
 
 
 **ii.Recoding service length level
-replace loslvl = "1" if loslvl == "< 1"
-replace loslvl = "2" if loslvl == "1-2"
-replace loslvl = "3" if loslvl == "3-4"
-replace loslvl = "4" if loslvl == "5-9"
-replace loslvl = "5" if loslvl == "10-14"
-replace loslvl = "6" if loslvl == "15-19"
-replace loslvl = "7" if loslvl == "20-24"
-replace loslvl = "8" if loslvl == "25-29"
-replace loslvl = "9" if loslvl == "30-34" | loslvl == "35+"
-replace loslvl = "" if loslvl == "UNSP"
+gen loslvl_common = ""
+replace loslvl_common = "1" if loslvl == "< 1"
+replace loslvl_common = "2" if loslvl == "1-2"
+replace loslvl_common = "3" if loslvl == "3-4"
+replace loslvl_common = "4" if loslvl == "5-9"
+replace loslvl_common = "5" if loslvl == "10-14"
+replace loslvl_common = "6" if loslvl == "15-19"
+replace loslvl_common = "7" if loslvl == "20-24"
+replace loslvl_common = "8" if loslvl == "25-29"
+replace loslvl_common = "9" if loslvl == "30-34" | loslvl == "35+"
+replace loslvl_common = "" if loslvl == "UNSP"
+
+gen occ_cat_common = occ_cat
 
 **iv. Create Longitudinal variables
 *length of attachment (tenure) to agency
@@ -434,7 +449,8 @@ forval yr=2000/2012 {
 	    saveold $data/buzz_`y`yr'q`qr'.dta, replace
 	    restore
     }
-}   
+}  
+
 capture log close 
 
 
