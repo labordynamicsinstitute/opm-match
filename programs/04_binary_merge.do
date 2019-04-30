@@ -33,8 +33,8 @@ III. Merge FOIA 2013 with Buzzfeed
 timer on 9
 /*
 Possible program arguments
-1: data1 = foia13
-2: data2 = foia16, feds, buzz
+1: data1 = foia16, feds, buzz
+2: data2 = foia13
 3: year = 2000-2012
 4: quarter = 1-4
 
@@ -43,13 +43,14 @@ capture program drop merge_summary
 capture program drop merge_append
 program merge_summary
 	use $data/`1'_y`3'q`4'.dta, clear
+	local obs_`1' = _N
 	//Use merge m:m because I want do not need a full outer join. It is fine to lose the duplicates
 	merge m:m $bvarlist1 using $data/`2'_y`3'q`4'.dta
-	di "*** FOIA16 Y`1'Q`2'***"
+	di "*** `1' `2' Y`3'Q`4'***"
 	rename _merge merge_`1'_`2'
-	count if merge_`1'_`2' ==1 //FOIA2013
+	count if merge_`1'_`2' ==1 //FOIA2016
 	local merge_`1'_`3'_`4' = `r(N)'
-	count if merge_`1'_`2' ==2 //FOIA2016
+	count if merge_`1'_`2' ==2 //FOIA2013
 	local merge_`2'_`3'_`4' = `r(N)'
 	count if merge_`1'_`2' ==3 //Matched
 	local merge_match_`3'_`4' = `r(N)'
@@ -63,13 +64,14 @@ program merge_summary
 	gen merge_`1'=.
 	gen merge_`2'=.
 	gen merge_matched=.
+	gen obs_`1' =.
 	replace year = `3' in 1
 	replace quarter = `4' in 1
 	replace merge_`1'= `merge_`1'_`3'_`4''  in 1
 	replace merge_`2'= `merge_`2'_`3'_`4'' in 1
 	replace merge_matched= `merge_match_`3'_`4'' in 1
-
-	gen matched_`1'_`2' = merge_matched/(merge_`1'+merge_`2'+merge_matched)
+	replace obs_`1' = `obs_`1'' in 1
+	gen matched_`1'_`2' = merge_matched/(obs_`1')
 
 
 	saveold $outputs/temp_`1'_`2'_y`3'q`4'.dta, replace
@@ -84,7 +86,7 @@ program merge_append
 	}
 
 	saveold $outputs/merge_`1'_`2'_summary.dta, replace
-	export delimited $outputs/merge_`1'_`2'_summary.dta, replace
+	export delimited $outputs/merge_`1'_`2'_summary.csv, replace
 
 	forval yr=2000/2012 {
 	    forval qr = 1/4 {
@@ -106,13 +108,13 @@ if $merge1_switch == 1 {
 
 forval yr=2000/2012 {
     forval qr=1/4 {
-	merge_summary foia13 foia16 `yr' `qr' 
+	merge_summary foia16 foia13 `yr' `qr' 
 
     }
 }
 
 *program merge_append 1 2 // 1-first dataset 2-second dataset
-merge_append foia13 foia16
+merge_append foia16 foia13 
 
 }
 
@@ -128,13 +130,13 @@ if $merge2_switch == 1 {
 
 forval yr=2000/2012 {
     forval qr=1/4 {
-	merge_summary foia13 feds `yr' `qr' 
+	merge_summary feds foia13 `yr' `qr' 
 
     }
 }
 
 *program merge_append 1 2 // 1-first dataset 2-second dataset
-merge_append foia13 feds
+merge_append feds foia13 
 
 }
 /********************************************************************************
@@ -149,13 +151,13 @@ if $merge3_switch == 1 {
 
 forval yr=2000/2012 {
     forval qr=1/4 {
-	merge_summary foia13 buzz `yr' `qr' 
+	merge_summary buzz foia13 `yr' `qr' 
 
     }
 }
 
 *program merge_append 1 2 // 1-first dataset 2-second dataset
-merge_append foia13 buzz
+merge_append buzz foia13 
 
 }
 
@@ -163,8 +165,8 @@ timer list
 
 capture log close
 
-}
-}
+
+/*
 /********************************************************************************
 |																				|
 |	IV Save merge stats to CSV					|
