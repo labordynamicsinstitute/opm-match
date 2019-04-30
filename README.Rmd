@@ -119,23 +119,25 @@ We would want to leverage the uncertainty in the linkage for tabulation purposes
 
 Format and recode all OPM datas into quarterly comparable files. Created longitudinal variables of tenure to agency, posting length to duty station, tenure to occupation, quarter-over-quarter earnings change. 
 
-Note: With 2 datasets with different levels of data protection, the most protect format is used for merge. I.e. topcoded salary levels vs actual salary
+Note: Append all quarterly files to single file to produce longitudinal variables, then save results as quarterly files again for better matching. With 2 datasets with different levels of data protection, the most protect format is used for merge. I.e. topcoded salary levels vs actual salary. 
 
 ## 02_duplicate_tab.do
 
 Tabulates duplicates of given specified varlists for FOIA 2013 (Cornell1), FOIA 2016 (Cornell2), Fedscope, and Buzzfeed. The 3 varlists are all shared variables between FOIA 2013-FOIA 2016, FOIA 2013-Fedscope, and FOIA 2013-Buzzfeed.
 
+Note: To do- update code to save results into CSV
+
 ## 03_merge_opm.do
 
 The OPM datasets are merged iteratively starting with FOIA 2013 with FOIA 2016 (I). Then merge result(I) with Fedscope. Then merge result(II) with Buzzfeed.
 
-Note: Merge m:m is used because a full outer join is not needed. It is fine to lose duplicates in this exercise. The merges are partitioned in to annual files due to the exponential increase to run time from file size.
+Note: Merge m:m is used because a full outer join is not needed. It is fine to lose duplicates in this exercise. Matches produced from duplicated items in Stata's merge m:m are not technically random (it is based on how the dataset is sorted), but since I didn't sort the data with regard to any of the non-merge variables, the match results should be fairly random. The merges are partitioned into quarterly files for matching.
 
 ## 04_binary_merge.do
 
 3 separate merge files are created using FOIA 2013 as the base: FOIA 2013-FOIA 2016, FOIA 2013-Fedscope, and FOIA 2013-Buzzfeed. The match rates are saved to outputs/binary_merge_summary.csv
 
-Note: Merge m:m is used because a full outer join is not needed. It is fine to lose duplicates in this exercise. The merges are partitioned in to annual files due to the exponential increase to run time from file size.
+Note: Merge m:m is used because a full outer join is not needed. It is fine to lose duplicates in this exercise. Matches produced from duplicated items in Stata's merge m:m are not technically random (it is based on how the dataset is sorted), but since I didn't sort the data with regard to any of the non-merge variables, the match results should be fairly random. The merges are partitioned into quarterly files for matching.
 
 ## 05_binary_contribution.do
 
@@ -143,27 +145,27 @@ A CSV file showing the merge variables in 04 by importance in terms of contribut
 
 Note: Relative contribution to uniqueness is measured by iteratively removing and adding one variable from the merge varlist. The changes in the numbers of nonduplicates from removing and adding the variable indicates it's relative contribution to uniqueness. A larger increase in nonduplicates indicates larger relative contribution to uniqueness.
 
-# Common Topcodes
-```{r read_topcode1, include=FALSE}
-topcode1 <- read_excel("topcodes.xlsx", sheet = "age") %>% select("Age Code","Buzzfeed","Cornell-FOIA 2013","Cornell FOIA 2016", "Fedscope-old")
+# Standardized Codes
+```{r read_code1, include=FALSE}
+topcode1 <- read_excel("standard_code.xlsx", sheet = "age") %>% select("Age Code","Buzzfeed","Cornell-FOIA 2013","Cornell FOIA 2016", "Fedscope-old")
 kable(topcode1 %>% slice(1:10)) %>%
 kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = F)
 ```
 
-```{r read_topcode2, include=FALSE}
-topcode2 <- read_excel("topcodes.xlsx", sheet = "loslvl") %>% select("Length of Service Codee","Buzzfeed","Cornell-FOIA 2013","Cornell FOIA 2016", "Fedscope-old")
+```{r read_code2, include=FALSE}
+topcode2 <- read_excel("standard_code.xlsx", sheet = "loslvl") %>% select("Length of Service Codee","Buzzfeed","Cornell-FOIA 2013","Cornell FOIA 2016", "Fedscope-old")
 kable(topcode2 %>% slice(1:10)) %>%
 kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = F)
 ```
 
-```{r read_topcode3, include=FALSE}
-topcode3 <- read_excel("topcodes.xlsx", sheet = "paylvl") %>% select("Salary Code","Buzzfeed","Cornell-FOIA 2013","Cornell FOIA 2016", "Fedscope-old")
+```{r read_code3, include=FALSE}
+topcode3 <- read_excel("standard_code.xlsx", sheet = "paylvl") %>% select("Salary Code","Buzzfeed","Cornell-FOIA 2013","Cornell FOIA 2016", "Fedscope-old")
 kable(topcode3 %>% slice(1:10)) %>%
 kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = F)
 ```
 
-```{r read_topcode4, include=FALSE}
-topcode4 <- read_excel("topcodes.xlsx", sheet = "occ_cat") %>% select("Occupational Category","Buzzfeed","Cornell-FOIA 2013","Cornell FOIA 2016", "Fedscope-old")
+```{r read_code4, include=FALSE}
+topcode4 <- read_excel("standard_code.xlsx", sheet = "occ_cat") %>% select("Occupational Category","Buzzfeed","Cornell-FOIA 2013","Cornell FOIA 2016", "Fedscope-old")
 kable(topcode4 %>% slice(1:10)) %>%
 kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = F)
 ```
