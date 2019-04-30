@@ -20,89 +20,145 @@ This program merges FOIA 2013, FOIA 2016, Fedscope, and Buzzfeed OPM datasets.
 It also identifies the distribution of "exact" matches.
 
 
-The program runs iteratively in the following order:
+The program runs in the following order:
 
-From 2000-2012
+From 2000q1-2012q4
 
 I.   Merge FOIA 2013 with FOIA 2016
-II.  Merge (I) with Fedscope
-III. Merge (II) with Buzzfeed
+II.  Merge FOIA 2013 with Fedscope
+III. Merge FOIA 2013 with Buzzfeed
 
 
 */
 timer on 9
+/*
+Possible program arguments
+1: data1 = foia13
+2: data2 = foia16, feds, buzz
+3: year = 2000-2012
+4: quarter = 1-4
 
-*Run for all annual files
+*/
+capture program drop merge_summary
+capture program drop merge_append
+program merge_summary
+	use $data/`1'_y`3'q`4'.dta, clear
+	//Use merge m:m because I want do not need a full outer join. It is fine to lose the duplicates
+	merge m:m $bvarlist1 using $data/`2'_y`3'q`4'.dta
+	di "*** FOIA16 Y`1'Q`2'***"
+	rename _merge merge_`1'_`2'
+	count if merge_`1'_`2' ==1 //FOIA2013
+	local merge_`1'_`3'_`4' = `r(N)'
+	count if merge_`1'_`2' ==2 //FOIA2016
+	local merge_`2'_`3'_`4' = `r(N)'
+	count if merge_`1'_`2' ==3 //Matched
+	local merge_match_`3'_`4' = `r(N)'
+	saveold $outputs/binary_merge_`1'_`2'_y`3'q`4'.dta, replace
+	
+
+	clear
+	set obs 1
+	gen year = `3'
+	gen quarter = `4'
+	gen merge_`1'=.
+	gen merge_`2'=.
+	gen merge_matched=.
+	replace year = `3' in 1
+	replace quarter = `4' in 1
+	replace merge_`1'= `merge_`1'_`3'_`4''  in 1
+	replace merge_`2'= `merge_`2'_`3'_`4'' in 1
+	replace merge_matched= `merge_match_`3'_`4'' in 1
+
+	gen matched_`1'_`2' = merge_matched/(merge_`1'+merge_`2'+merge_matched)
+
+
+	saveold $outputs/temp_`1'_`2'_y`3'q`4'.dta, replace
+end 
+
+program merge_append
+	clear
+	forval yr=2000/2012 {
+	    forval qr = 1/4 {
+		append using $outputs/temp_`1'_`2'_y`yr'q`qr'.dta
+	    }
+	}
+
+	saveold $outputs/merge_`1'_`2'_summary.dta, replace
+	export delimited $outputs/merge_`1'_`2'_summary.dta, replace
+
+	forval yr=2000/2012 {
+	    forval qr = 1/4 {
+		erase $outputs/temp_`1'_`2'_y`yr'q`qr'.dta
+	    }
+	}
+	
+end 
+
+/********************************************************************************
+|																				|
+|	I Merging FOIA 2013 and FOIA 2016 and Export Summary		|
+|																				|
+********************************************************************************/
+*Run for all quartly files
+*program merge_summary 1 2 3 4 // 1-first dataset 2-second dataset 3-year 4-quarter 
+
+if $merge1_switch == 1 {
+
 forval yr=2000/2012 {
-capture log using merge_opm_`yr'.log, replace
-forval qr=1/4 {
+    forval qr=1/4 {
+	merge_summary foia13 foia16 `yr' `qr' 
+
+    }
+}
+
+*program merge_append 1 2 // 1-first dataset 2-second dataset
+merge_append foia13 foia16
+
+}
+
 /********************************************************************************
 |																				|
-|	I Merging FOIA 2013 and FOIA 2016		|
-|																				|
-********************************************************************************/	
-timer on 1
-use $data/foia13_y`yr'q`qr.dta, clear
-//Use merge m:m because I want do not need a full outer join. It is fine to lose the duplicates
-merge m:m $bvarlist1 using $data/foia16_y`yr'q`qr.dta
-
-di "*** FOIA16 `yr' ***"
-rename _merge merge1
-tab merge1
-sum merge1 if merge1 ==1 //FOIA2013
-local merge1_1_`yr'_`qr' = `r(N)'
-sum merge1 if merge1 ==2 //FOIA2016
-local merge1_2_`yr'_`qr' = `r(N)'
-sum merge1 if merge1 ==3 //Matched
-local merge1_3_`yr'_`qr' = `r(N)'
-
-timer off 1
-saveold $outputs/binary_merge1_y`yr'q`qr.dta, replace
-/********************************************************************************
-|																				|
-|	II Merge FOIA 2013 with Fedscope						|
+|	II Merge FOIA 2013 with Fedscope and Export Summary						|
 |																				|
 ********************************************************************************/
-timer on 2
-use $data/foia13_y`yr'q`qr.dta, clear
-//Use merge m:m because I want do not need a full outer join. It is fine to lose the duplicates
-merge m:m $bvarlist2 using $data/feds_y`yr'q`qr.dta
+*Run for all quartly files
+*program merge_summary 1 2 3 4 // 1-year 2-quarter 3-first dataset 4-second dataset
 
-di "*** Fedscope `yr' ***"
-rename _merge merge2
-tab merge2
-sum merge2 if merge2 ==1 //FOIA2013
-local merge2_1_`yr'_`qr' = `r(N)'
-sum merge2 if merge2 ==2 //Fedscope
-local merge2_2_`yr'_`qr' = `r(N)'
-sum merge2 if merge2 ==3 //Matched
-local merge2_3_`yr'_`qr' = `r(N)'
+if $merge2_switch == 1 {
 
-timer off 2
-saveold $outputs/binary_merge2_y`yr'q`qr.dta, replace
+forval yr=2000/2012 {
+    forval qr=1/4 {
+	merge_summary foia13 feds `yr' `qr' 
+
+    }
+}
+
+*program merge_append 1 2 // 1-first dataset 2-second dataset
+merge_append foia13 feds
+
+}
 /********************************************************************************
 |																				|
-|	III Merge FOIA 2013 with Buzzfeed					|
+|	III Merge FOIA 2013 with Buzzfeed and Export Summary					|
 |																				|
 ********************************************************************************/
-timer on 3
-use $data/foia13_y`yr'q`qr.dta, clear
-//Use merge m:m because I want do not need a full outer join. It is fine to lose the duplicates
-merge m:m $bvarlist3 using $data/buzz_y`yr'q`qr.dta
+*Run for all quartly files
+*program merge_summary 1 2 3 4 // 1-year 2-quarter 3-first dataset 4-second dataset
 
-di "*** Buzzfeed `yr' ***"
-rename _merge merge3
-tab merge3
-sum merge3 if merge3 ==1 //FOIA2013
-local merge3_1_`yr'_`qr' = `r(N)'
-sum merge3 if merge3 ==2 //Buzzfeed
-local merge3_2_`yr'_`qr' = `r(N)'
-sum merge3 if merge3 ==3 //Matched
-local merge3_3_`yr'_`qr' = `r(N)'
+if $merge3_switch == 1 {
 
-saveold $outputs/binary_merge3_y`yr'q`qr.dta, replace
+forval yr=2000/2012 {
+    forval qr=1/4 {
+	merge_summary foia13 buzz `yr' `qr' 
 
-timer off 3
+    }
+}
+
+*program merge_append 1 2 // 1-first dataset 2-second dataset
+merge_append foia13 buzz
+
+}
+
 timer list
 
 capture log close
@@ -115,7 +171,7 @@ capture log close
 |																				|
 ********************************************************************************/
 clear
-set obs 13
+set obs 70
 gen year =.
 gen quarter =.
 gen merge1_foia13=.
@@ -146,16 +202,81 @@ forval yr=2000/2012 {
 	replace merge3_foia13= `merge3_1_`yr'_`qr'' in `i'
 	replace merge3_buzz= `merge3_2_`yr'_`qr'' in `i'
 	replace merge3_matched= `merge3_3_`yr'_`qr'' in `i'
+
         local i = `i' + 1
     }
 }
 
 gen matched1 = merge1_matched/(merge1_foia13+merge1_foia16+merge1_matched)
+
 gen matched2 = merge2_matched/(merge2_foia13+merge2_feds+merge2_matched)
 gen matched3 = merge3_matched/(merge3_foia13+merge3_buzz+merge3_matched)
 
+/*
 saveold $outputs/binary_merge_summary.dta, replace
 export delimited binary_merge_summary, replace
+*/
+saveold $outputs/merge_foia13_foia16_summary.dta, replace
+export delimited merge_foia13_foia16_summary, replace
 
 timer off 9
 timer list 9
+
+
+/*
+old codes
+	timer on 1
+	use $data/foia13_y`yr'q`qr'.dta, clear
+	//Use merge m:m because I want do not need a full outer join. It is fine to lose the duplicates
+	merge m:m $bvarlist1 using $data/foia16_y`yr'q`qr'.dta
+
+	di "*** FOIA16 `yr' ***"
+	rename _merge merge1
+	tab merge1
+	sum merge1 if merge1 ==1 //FOIA2013
+	local merge1_1_`yr'_`qr' = `r(N)'
+	sum merge1 if merge1 ==2 //FOIA2016
+	local merge1_2_`yr'_`qr' = `r(N)'
+	sum merge1 if merge1 ==3 //Matched
+	local merge1_3_`yr'_`qr' = `r(N)'
+
+	timer off 1
+	saveold $outputs/binary_merge1_y`yr'q`qr'.dta, replace
+
+	timer on 2
+	use $data/foia13_y`yr'q`qr'.dta, clear
+	//Use merge m:m because I want do not need a full outer join. It is fine to lose the duplicates
+	merge m:m $bvarlist2 using $data/feds_y`yr'q`qr'.dta
+
+	di "*** Fedscope `yr' ***"
+	rename _merge merge2
+	tab merge2
+	sum merge2 if merge2 ==1 //FOIA2013
+	local merge2_1_`yr'_`qr' = `r(N)'
+	sum merge2 if merge2 ==2 //Fedscope
+	local merge2_2_`yr'_`qr' = `r(N)'
+	sum merge2 if merge2 ==3 //Matched
+	local merge2_3_`yr'_`qr' = `r(N)'
+
+	timer off 2
+	saveold $outputs/binary_merge2_y`yr'q`qr'.dta, replace
+
+	timer on 3
+	use $data/foia13_y`yr'q`qr'.dta, clear
+	//Use merge m:m because I want do not need a full outer join. It is fine to lose the duplicates
+	merge m:m $bvarlist3 using $data/buzz_y`yr'q`qr'.dta
+
+	di "*** Buzzfeed `yr' ***"
+	rename _merge merge3
+	tab merge3
+	sum merge3 if merge3 ==1 //FOIA2013
+	local merge3_1_`yr'_`qr' = `r(N)'
+	sum merge3 if merge3 ==2 //Buzzfeed
+	local merge3_2_`yr'_`qr' = `r(N)'
+	sum merge3 if merge3 ==3 //Matched
+	local merge3_3_`yr'_`qr' = `r(N)'
+
+	saveold $outputs/binary_merge3_y`yr'q`qr'.dta, replace
+
+timer off 3
+*/
