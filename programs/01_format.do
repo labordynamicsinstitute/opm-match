@@ -169,7 +169,7 @@ SALARY LEVEL CHANGE RANGE
 */
 *quarter-on-quarter earnings-level change
 //the 1st qoq earnings change will be missing, 
-destring paylvl, gen(numpaylvl)
+destring paylvl_common, gen(numpaylvl)
 by id (q_date), sort: gen qoq_earn_change_lvl = numpaylvl -numpaylvl[_n-1] if id !="#########"
 tostring qoq_earn_change_lvl, replace
 replace qoq_earn_change_lvl = "" if qoq_earn_change_lvl == "."
@@ -178,14 +178,15 @@ replace qoq_earn_change_lvl = "A" +qoq_earn_change_lvl  if paylvl[_n-1] == "1"
 replace qoq_earn_change_lvl = "Z" +qoq_earn_change_lvl  if paylvl == "18" & qoq_earn_change_lvl !=""
 replace qoq_earn_change_lvl = "" if q_date2 > 1 & q_date2 != .
 drop q_date2
+drop foia13_dup
 saveold $data/foia13_formatted.dta, replace
 
+//getting disk overflow problem, got rid of preserve and recall the full file instead
 forval yr=2000/2012 {  
     forval qr=1/4 {
-	    preserve
+	    use $data/foia13_formatted.dta, clear 
 	    keep if year ==`yr'& quarter == `qr'
 	    saveold $data/foia13_y`yr'q`qr'.dta, replace
-	    restore
     }
 }    
 capture log close
@@ -237,7 +238,7 @@ SALARY LEVEL CHANGE RANGE
 *quarter-on-quarter earnings-level change
 //the 1st qoq earnings change will be missing, 
 by id (q_date), sort: gen q_date2 = q_date - q_date[_n-1]
-destring paylvl, gen(numpaylvl)
+destring paylvl_common, gen(numpaylvl)
 by id (q_date), sort: gen qoq_earn_change_lvl = numpaylvl -numpaylvl[_n-1] if id !="#########"
 tostring qoq_earn_change_lvl, replace
 replace qoq_earn_change_lvl = "" if qoq_earn_change_lvl == "."
@@ -247,14 +248,15 @@ replace qoq_earn_change_lvl = "Z" +qoq_earn_change_lvl  if paylvl == "18" & qoq_
 replace qoq_earn_change_lvl = "" if q_date2 > 1 & q_date2 != .
 drop q_date2
 ren id id_foia16
+drop paylvl occ_cat loslvl age foia16_dup
 saveold $data/foia16_formatted.dta, replace
 
+//getting disk overflow problem, got rid of preserve and recall the full file instead
 forval yr=2000/2012 {    
     forval qr=1/4 {
-	    preserve
+	    use $data/foia16_formatted.dta, clear
 	    keep if year ==`yr' & quarter == `qr'
-	    saveold $data/foia16_y`yr'q`qr'.dta, replace
-	    restore
+            save $data/foia16_y`yr'q`qr'.dta , replace
     }  
 }    
 capture log close
@@ -353,17 +355,16 @@ replace occ_cat_common = "T" if occ_cat == "3"
 replace occ_cat_common = "*" if occ_cat == "9"
 
 **iii. Create Longitudinal variables (no id to identify individuals)
-
+drop feds_dup
 saveold $data/feds_formatted.dta, replace
 
-
+//getting disk overflow problem, got rid of preserve and recall the full file instead
 forval yr=2000/2012 {
     
     forval qr=1/4 {
-	    preserve
+	    use $data/feds_formatted.dta, clear
 	    keep if year ==`yr' & quarter == `qr'
 	    saveold $data/feds_y`yr'q`qr'.dta, replace
-	    restore
     } 
 }   
 capture log close 
@@ -434,20 +435,20 @@ gen tenure_occ = q_date-occ_firstyr+1 if (strmatch(name, "NAME WITHHELD*") == 0 
 drop occ_firstyr
 
 *quarter-on-quarter earnings change (or earnings-level change)
-by id (q_date), sort: gen q_date2 = q_date - q_date[_n-1]
+by name (q_date), sort: gen q_date2 = q_date - q_date[_n-1]
 //the 1st qoq earnings change will be missing, 
 by name (q_date), sort: gen qoq_earn_change = adj_pay -adj_pay[_n-1] if (strmatch(name, "NAME WITHHELD*") == 0 & strmatch(name, "NAME UNKNOWN") == 0)
 replace qoq_earn_change = . if q_date2 > 1 & q_date2 != .
 drop q_date2
+drop buzz_dup
 saveold $data/buzz_formatted.dta, replace
 
-
+//getting disk overflow problem, got rid of preserve and recall the full file instead
 forval yr=2000/2012 {
     forval qr=1/4 {
-	    preserve
+	    use $data/buzz_formatted.dta, clear
 	    keep if year ==`yr' & quarter == `qr'
 	    saveold $data/buzz_`y`yr'q`qr'.dta, replace
-	    restore
     }
 }  
 
