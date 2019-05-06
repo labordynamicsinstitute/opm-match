@@ -28,7 +28,8 @@ I.   Merge FOIA 2013 with FOIA 2016
 II.  Merge FOIA 2013 with Fedscope
 III. Merge FOIA 2013 with Buzzfeed
 
-
+For FOIA 2016, "security-related" agencies and occupations have blanked certain fields: id_foia16, name, duty_sta, cbsa, loc
+They will be merged separately without using duty_sta, cbsa, loc
 */
 timer on 9
 /*
@@ -37,6 +38,7 @@ Possible program arguments
 2: data2 = foia13
 3: year = 2000-2012
 4: quarter = 1-4
+5: varlist = bvarlist1a, bvarlist1b, bvarlist2, bvarlist3
 
 */
 capture program drop merge_summary
@@ -45,7 +47,7 @@ program merge_summary
 	use $data/`1'_y`3'q`4'.dta, clear
 	local obs_`1' = _N
 	//Use merge m:m because I want do not need a full outer join. It is fine to lose the duplicates
-	merge m:m $bvarlist1 using $data/`2'_y`3'q`4'.dta
+	merge m:m `5' using $data/`2'_y`3'q`4'.dta
 	di "*** `1' `2' Y`3'Q`4'***"
 	rename _merge merge_`1'_`2'
 	count if merge_`1'_`2' ==1 //FOIA2016
@@ -71,7 +73,7 @@ program merge_summary
 	replace merge_`2'= `merge_`2'_`3'_`4'' in 1
 	replace merge_matched= `merge_match_`3'_`4'' in 1
 	replace obs_`1' = `obs_`1'' in 1
-	gen matched_`1'_`2' = merge_matched/(obs_`1')
+	gen matched_`1'_`2' = 1 - (merge_`1'/(obs_`1'))
 
 
 	saveold $outputs/temp_`1'_`2'_y`3'q`4'.dta, replace
@@ -96,22 +98,35 @@ program merge_append
 	
 end 
 
+
 /********************************************************************************
 |																				|
 |	I Merging FOIA 2013 and FOIA 2016 and Export Summary		|
 |																				|
 ********************************************************************************/
 *Run for all quartly files
-*program merge_summary 1 2 3 4 // 1-first dataset 2-second dataset 3-year 4-quarter 
+*program merge_summary 1 2 3 4 5 // 1-first dataset 2-second dataset 3-year 4-quarter 5-merge varlist
 
 if $merge1_switch == 1 {
 
 forval yr=2000/2012 {
     forval qr=1/4 {
-	merge_summary foia16 foia13 `yr' `qr' 
+	merge_summary foia16a foia13 `yr' `qr' $bvarlist1a
+	merge_summary foia16b foia13 `yr' `qr' $bvarlist1b
 
     }
 }
+
+*Append the split merge summary files
+forval yr=2000/2012 {
+    forval qr = 1/4 {
+	use $outputs/temp_foia16a_foia13_y`yr'q`qr'.dta, clear
+	append using  $outputs/temp_foia16b_foia13_y`yr'q`qr'.dta, gen(masking) //0 = no masking, 1 = masking
+	save $outputs/temp_foia16_foia13_y`yr'q`qr'.dta, replace
+    }
+}
+
+
 
 *program merge_append 1 2 // 1-first dataset 2-second dataset
 merge_append foia16 foia13 
@@ -130,7 +145,7 @@ if $merge2_switch == 1 {
 
 forval yr=2000/2012 {
     forval qr=1/4 {
-	merge_summary feds foia13 `yr' `qr' 
+	merge_summary feds foia13 `yr' `qr' $bvarlist2
 
     }
 }
@@ -151,7 +166,7 @@ if $merge3_switch == 1 {
 
 forval yr=2000/2012 {
     forval qr=1/4 {
-	merge_summary buzz foia13 `yr' `qr' 
+	merge_summary buzz foia13 `yr' `qr' $bvarlist3
 
     }
 }

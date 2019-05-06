@@ -25,6 +25,18 @@ III.   Format Fedscope
 
 
 I only keep 2000-2012 samples for merging (shared across all 4 datasets)
+DOD agencies are dropped from formatted files: AF AR DD NV 
+
+
+
+
+2 instances in FOIA 2013 where there is error in raw data.
+year	quarter	test	id	agency
+2011	2	5	001201539	VAT
+2008	3	5	002819277	HSBã
+
+agency > VATA
+agency > HSBC
 */
 
 
@@ -36,6 +48,18 @@ I only keep 2000-2012 samples for merging (shared across all 4 datasets)
 capture log using foia13.log
 clear
 use $data/opmfoia13_all.dta, clear
+*drop DOD agencies
+gen dept = substr(agency,1,2)
+drop if dept == "AF" | dept == "AR" | dept == "DD" | dept == "NV"
+drop dept  
+
+*fix agency error
+replace agency = "VATA" if id == "001201539" & year == 2011 & quarter == 2
+replace agency = "HSBC" if id == "002819277" & year == 2008 & quarter == 3
+compress agency
+
+
+
 gen q_date =yq(year,quarter)
 
 *Recode to common value 
@@ -174,9 +198,10 @@ by id (q_date), sort: gen qoq_earn_change_lvl = numpaylvl -numpaylvl[_n-1] if id
 tostring qoq_earn_change_lvl, replace
 replace qoq_earn_change_lvl = "" if qoq_earn_change_lvl == "."
 drop numpaylvl
-replace qoq_earn_change_lvl = "A" +qoq_earn_change_lvl  if paylvl[_n-1] == "1"
+by id (q_date), sort: replace qoq_earn_change_lvl = "A" +qoq_earn_change_lvl  if paylvl[_n-1] == "1" 
 replace qoq_earn_change_lvl = "Z" +qoq_earn_change_lvl  if paylvl == "18" & qoq_earn_change_lvl !=""
 replace qoq_earn_change_lvl = "" if q_date2 > 1 & q_date2 != .
+by id (q_date), sort: replace qoq_earn_change_lvl = "" if _n==1 // there shouldn't be change in earning in the 1st obs of an individual
 drop q_date2
 drop foia13_dup
 saveold $data/foia13_formatted.dta, replace
@@ -199,6 +224,12 @@ capture log using foia16.log
 
 clear
 use $data/opmfoia16_all.dta, clear
+*drop DOD agencies
+gen dept = substr(agency,1,2)
+drop if dept == "AF" | dept == "AR" | dept == "DD" | dept == "NV"
+drop dept  
+
+
 gen q_date =yq(year,quarter)
 
 gen loc = substr(duty_sta,1,2)
@@ -243,9 +274,10 @@ by id (q_date), sort: gen qoq_earn_change_lvl = numpaylvl -numpaylvl[_n-1] if id
 tostring qoq_earn_change_lvl, replace
 replace qoq_earn_change_lvl = "" if qoq_earn_change_lvl == "."
 drop numpaylvl
-replace qoq_earn_change_lvl = "A" +qoq_earn_change_lvl  if paylvl[_n-1] == "1"
+by id (q_date), sort: replace qoq_earn_change_lvl = "A" +qoq_earn_change_lvl  if paylvl[_n-1] == "1" 
 replace qoq_earn_change_lvl = "Z" +qoq_earn_change_lvl  if paylvl == "18" & qoq_earn_change_lvl !=""
 replace qoq_earn_change_lvl = "" if q_date2 > 1 & q_date2 != .
+by id (q_date), sort: replace qoq_earn_change_lvl = "" if _n==1 // there shouldn't be change in earning in the 1st obs of an individual
 drop q_date2
 ren id id_foia16
 drop paylvl occ_cat loslvl age foia16_dup
@@ -259,6 +291,19 @@ forval yr=2000/2012 {
             save $data/foia16_y`yr'q`qr'.dta , replace
     }  
 }    
+
+*Separate FOIA 2016 in masked and nonmasked files
+forval yr=2000/2012 {
+    forval qr = 1/4 {
+	use $data/foia16_y`yr'q`qr'.dta, clear
+	keep if duty_sta != "#########"
+	save $data/foia16a_y`yr'q`qr'.dta, replace
+	use $data/foia16_y`yr'q`qr'.dta, clear
+	keep if duty_sta == "#########"
+	save $data/foia16b_y`yr'q`qr'.dta, replace
+    }
+}
+
 capture log close
 
 
@@ -270,6 +315,11 @@ capture log close
 capture log using feds.log
 clear
 use $data/opmfeds_all.dta, clear
+*drop DOD agencies
+gen dept = substr(agency,1,2)
+drop if dept == "AF" | dept == "AR" | dept == "DD" | dept == "NV"
+drop dept  
+
 gen q_date =yq(year,quarter)
 
 *Rename and Split Fedscope vars 
@@ -377,6 +427,12 @@ capture log close
 capture log using feds.log
 clear
 use $data/opmbuzz99_all.dta, clear
+*drop DOD agencies
+gen dept = substr(agency,1,2)
+drop if dept == "AF" | dept == "AR" | dept == "DD" | dept == "NV"
+drop dept  
+
+
 gen q_date =yq(year,quarter)
 
 **dropping redundant/unused fields to save memory
@@ -448,7 +504,7 @@ forval yr=2000/2012 {
     forval qr=1/4 {
 	    use $data/buzz_formatted.dta, clear
 	    keep if year ==`yr' & quarter == `qr'
-	    saveold $data/buzz_`y`yr'q`qr'.dta, replace
+	    saveold $data/buzz_y`yr'q`qr'.dta, replace
     }
 }  
 

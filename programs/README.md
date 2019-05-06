@@ -83,7 +83,7 @@ Note: Merge m:m is used because a full outer join is not needed. It is fine to l
 
 3 separate merge files are created using FOIA 2013 as the base: FOIA 2013-FOIA 2016, FOIA 2013-Fedscope, and FOIA 2013-Buzzfeed. The match rates are saved to outputs/binary_merge_summary.csv
 
-Note: Merge m:m is used because a full outer join is not needed. It is fine to lose duplicates in this exercise. Matches produced from duplicated items in Stata's merge m:m are not technically random (it is based on how the dataset is sorted), but since I didn't sort the data with regard to any of the non-merge variables, the match results should be fairly random. The merges are partitioned into quarterly files for matching.
+Note: Merge m:m is used because a full outer join is not needed. It is fine to lose duplicates in this exercise. Matches produced from duplicated items in Stata's merge m:m are not technically random (it is based on how the dataset is sorted), but since I didn't sort the data with regard to any of the non-merge variables, the match results should be fairly random. The merges are partitioned into quarterly files for matching. The merge ratio is calculated as 1 subtracted by the ratio of unmatched from the master dataset to the total obs of master dataset, (1 - (unmatched_m/obs_m)).
 
 ## 05_binary_contribution.do
 
