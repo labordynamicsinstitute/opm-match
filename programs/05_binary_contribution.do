@@ -40,8 +40,10 @@ forval qr=1/4 {
 |	I Check relative contribution of variables FOIA 2013 and FOIA 2016		|
 |																				|
 ********************************************************************************/	
+if $merge1_switch == 1 {
+
 timer on 1
-use $outputs/binary_merge1_y`yr'q`qr.dta, clear
+use $outputs/binary_merge_foia16_foia13_y`yr'q`qr.dta, clear
 
 gen var =""
 gen contribution =.
@@ -70,12 +72,13 @@ saveold $outputs/contribution_binary_merge1_y`yr'q`qr, replace
 
 
 timer off 1
-
+}
 /********************************************************************************
 |																				|
 |	II Check relative contribution of variables FOIA 2013 with Fedscope						|
 |																				|
 ********************************************************************************/
+if $merge2_switch == 1 {
 timer on 2
 use $outputs/binary_merge2_y`yr'q`qr.dta, clear
 
@@ -106,11 +109,13 @@ saveold $outputs/contribution_binary_merge2_y`yr'q`qr, replace
 
 
 timer off 2
+}
 /********************************************************************************
 |																				|
 |	III Check relative contribution of variables  FOIA 2013 with Buzzfeed					|
 |																				|
 ********************************************************************************/
+if $merge3_switch == 1 {
 timer on 3
 use $outputs/binary_merge3_y`yr'q`qr, clear
 
@@ -139,8 +144,9 @@ gen quarter = `qr'
 
 saveold $outputs/contribution_binary_merge3_y`yr'q`qr, replace
 
-
 timer off 3
+}
+
 timer list
 }
 }
