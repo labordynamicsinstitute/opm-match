@@ -22,7 +22,8 @@ The program follows the order:
 I.     Format FOIA 2013
 II.    Format FOIA 2016	
 III.   Format Fedscope
-
+III.   Format Buzzfeed
+V.     Export Observation counts of all Formatted Quarterly Datasets
 
 I only keep 2000-2012 samples for merging (shared across all 4 datasets)
 DOD agencies are dropped from formatted files: AF AR DD NV 
@@ -509,5 +510,46 @@ forval yr=2000/2012 {
 }  
 
 capture log close 
+
+
+/********************************************************************************
+|																				|
+|	V.   Export Observation counts of all Formatted Quarterly Datasets						|
+|																				|
+********************************************************************************/	
+foreach dat in "foia13" "foia16" "feds" "buzz" {
+    forval yr=2000/2012 {
+        forval qr=1/4 {
+	    use $data/`dat'_y`yr'q`qr'.dta, clear
+	    local obs_`dat'_y`yr'q`qr' = _N
+	    di "`obs_`dat'_y`yr'q`qr''"
+	}
+    }
+} 
+clear
+set obs 60
+gen year = .
+gen quarter = .
+gen obs_foia13=.
+gen obs_foia16=.
+gen obs_feds=.
+gen obs_buzz=.
+
+local i = 1
+forval yr=2000/2012 {
+    forval qr=1/4 {
+	replace year = `yr' in `i'
+	replace quarter = `qr' in `i'
+	replace obs_foia13 = `obs_foia13_y`yr'q`qr'' in `i'
+	replace obs_foia16 = `obs_foia16_y`yr'q`qr'' in `i'
+	replace obs_feds = `obs_feds_y`yr'q`qr'' in `i'
+	replace obs_buzz = `obs_buzz_y`yr'q`qr'' in `i'
+	local i = `i'+1
+    }
+}
+ 
+
+saveold $outputs/opm_quarter_obs_count.dta, replace
+export delimited $outputs/opm_quarter_obs_count.csv, replace
 
 
