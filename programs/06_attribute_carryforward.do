@@ -18,6 +18,7 @@ set more off
 /*
 This program carrys forward the matched attributes in the FOIA 2013-FOIA 2016 merges to later FOIA 2016 files
 
+I Use Attributes attached to ID	
 
 
 The program runs for FOIA 2016 2013q1-2016q1
@@ -36,17 +37,10 @@ Possible program arguments
 
 /********************************************************************************
 |																				|
-|	I Use Attributes attached to 		|
+|	I Use Attributes attached to ID		|
 |																				|
 ********************************************************************************/
-clear 
-*save the out-of-scope FOIA 2016 data
-use $data/foia16_formatted.dta, clear
-keep if q_date >= $start_date
-local obs_foia16 = _N
-count if id_foia != "#########"
-local obs_foia16_nomiss = `r(N)'
-save $data/foia16_outsample.dta, replace
+//foia16_outsample.dta created in 01_format
 
 *keep only the important attribute information of the merge
 forval yr = 2000/2012 {
@@ -100,6 +94,11 @@ save $outputs/carryforward_foia16.dta, replace
 |	I Export Merge Summary	|
 |																				|
 ********************************************************************************/
+use $data/foia16_outsample.dta, clear
+local obs_foia16 = _N
+count if id_foia != "#########"
+local obs_foia16_nomiss = `r(N)'
+
 clear
 set obs 1
 gen obs_foia16= `obs_foia16'

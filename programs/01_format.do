@@ -305,6 +305,13 @@ forval yr=2000/2012 {
     }
 }
 
+
+*save the out-of-scope FOIA 2016 data
+use $data/foia16_formatted.dta, clear
+keep if q_date >= $start_date
+save $data/foia16_outsample.dta, replace
+
+
 capture log close
 
 
