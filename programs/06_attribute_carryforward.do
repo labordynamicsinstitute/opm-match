@@ -48,6 +48,7 @@ forval qr = 1/4 {
 use $outputs/binary_merge_foia16_foia13_y`yr'q`qr'.dta, clear
 keep if id_foia16 != ""
 keep q_date id_foia16 sex 
+drop if sex == ""
 save $outputs/temp_foia16_attribute_y`yr'q`qr'.dta, replace
 }
 }
