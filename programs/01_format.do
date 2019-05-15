@@ -298,12 +298,26 @@ forval yr=2000/2012 {
     forval qr = 1/4 {
 	use $data/foia16_y`yr'q`qr'.dta, clear
 	keep if duty_sta != "#########"
+	save $data/foia16ab_y`yr'q`qr'.dta, replace
+
+	use $data/foia16ab_y`yr'q`qr'.dta, clear
+	keep if id_foia16 != "#########"
 	save $data/foia16a_y`yr'q`qr'.dta, replace
+
+	use $data/foia16ab_y`yr'q`qr'.dta, clear
+	keep if id_foia16 == "#########"
+	save $data/foia16b_y`yr'q`qr'.dta, replace
+
+	erase $data/foia16ab_y`yr'q`qr'.dta
+
 	use $data/foia16_y`yr'q`qr'.dta, clear
 	keep if duty_sta == "#########"
-	save $data/foia16b_y`yr'q`qr'.dta, replace
+	save $data/foia16c_y`yr'q`qr'.dta, replace
+
     }
 }
+
+
 
 
 *save the out-of-scope FOIA 2016 data

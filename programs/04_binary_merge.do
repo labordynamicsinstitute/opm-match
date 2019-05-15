@@ -17,6 +17,8 @@ set more off
 //Notes
 /*
 This program merges FOIA 2013, FOIA 2016, Fedscope, and Buzzfeed OPM datasets.
+I use merge m:m I want do not need a full outer join. It is fine to lose the duplicates, and it is fine as merge m:m will in a way randomly assign duplcate matches since I never sorted the data other than by id and date.
+
 It also identifies the distribution of "exact" matches.
 
 
@@ -29,7 +31,19 @@ II.  Merge FOIA 2013 with Fedscope
 III. Merge FOIA 2013 with Buzzfeed
 
 For FOIA 2016, "security-related" agencies and occupations have blanked certain fields: id_foia16, name, duty_sta, cbsa, loc
-They will be merged separately without using duty_sta, cbsa, loc
+foia16a - no masking 
+foia16b - id_foia16 and name masked
+foia16c - id_foia16, name, duty_sta, cbsa, loc masked
+foia16b will be merged separately without using longitudinal vars
+foia16c will be merged separately without using duty_sta, cbsa, loc, and longitudinal vars
+
+Due to the nature of merge m:m, large portions of FOIA 2013 may be matched to FOIA 2016 subfiles with the last FOIA 2016 observation. This can be fixed by keep only one observation of largest duplicates given by the varlist 
+	
+//Due to the nature of merge m:m, large portions of FOIA 2013 may be matched to FOIA 2016 subfiles with the last FOIA 2016 observation. This can be fixed by keep only one observation of largest duplicates given by the varlist 
+	duplicates tag `5', gen(dup)
+	egen maxdup = max(dup)
+	by dup, sort: drop if dup==maxdup & _n!=1
+	drop dup maxdup
 */
 timer on 9
 /*
@@ -39,15 +53,19 @@ Possible program arguments
 3: year = 2000-2012
 4: quarter = 1-4
 5: varlist = bvarlist1a, bvarlist1b, bvarlist2, bvarlist3
+6: varlist version: a,b,c
 
 */
 capture program drop merge_summary
 capture program drop merge_append
 program merge_summary
+	di "`5'"
 	use $data/`1'_y`3'q`4'.dta, clear
 	local obs_`1' = _N
 	//Use merge m:m because I want do not need a full outer join. It is fine to lose the duplicates
-	merge m:m `5' using $data/`2'_y`3'q`4'.dta
+	noisily merge m:m `5' using $data/`2'_y`3'q`4'.dta
+
+	//generate merge stats
 	di "*** `1' `2' Y`3'Q`4'***"
 	rename _merge merge_`1'_`2'
 	count if merge_`1'_`2' ==1 //FOIA2016
@@ -56,6 +74,8 @@ program merge_summary
 	local merge_`2'_`3'_`4' = `r(N)'
 	count if merge_`1'_`2' ==3 //Matched
 	local merge_match_`3'_`4' = `r(N)'
+
+	drop if merge_`1'_`2' == 2
 	saveold $outputs/binary_merge_`1'_`2'_y`3'q`4'.dta, replace
 	
 
@@ -71,7 +91,7 @@ program merge_summary
 	replace quarter = `4' in 1
 	replace merge_`1'= `merge_`1'_`3'_`4''  in 1
 	replace merge_`2'= `merge_`2'_`3'_`4'' in 1
-	replace merge_matched= `merge_match_`3'_`4'' in 1
+	replace merge_matched`6'= `merge_match_`3'_`4'' in 1
 	replace obs_`1' = `obs_`1'' in 1
 	gen matched_`1'_`2' = 1 - (merge_`1'/(obs_`1'))
 
@@ -86,6 +106,8 @@ program merge_append
 		append using $outputs/temp_`1'_`2'_y`yr'q`qr'.dta
 	    }
 	}
+	
+	gen matched = ((obs_foia16a*matched_foia16a_foia13)+(obs_foia16b*matched_foia16b_foia13)+(obs_foia16c*matched_foia16c_foia13))/(obs_foia16a+obs_foia16b+obs_foia16c)
 
 	saveold $outputs/merge_`1'_`2'_summary.dta, replace
 	export delimited $outputs/merge_`1'_`2'_summary.csv, replace
@@ -111,9 +133,9 @@ if $merge1_switch == 1 {
 
 forval yr=2000/2012 {
     forval qr=1/4 {
-	merge_summary foia16a foia13 `yr' `qr' $bvarlist1a
-	merge_summary foia16b foia13 `yr' `qr' $bvarlist1b
-
+	merge_summary foia16a foia13 `yr' `qr' $bvarlist1a a
+	merge_summary foia16b foia13 `yr' `qr' $bvarlist1b b
+	merge_summary foia16c foia13 `yr' `qr' $bvarlist1c c
     }
 }
 
@@ -121,8 +143,13 @@ forval yr=2000/2012 {
 forval yr=2000/2012 {
     forval qr = 1/4 {
 	use $outputs/temp_foia16a_foia13_y`yr'q`qr'.dta, clear
-	append using  $outputs/temp_foia16b_foia13_y`yr'q`qr'.dta, gen(masking) //0 = no masking, 1 = masking
+	merge 1:1 year quarter using $outputs/temp_foia16b_foia13_y`yr'q`qr'.dta
+	drop _merge
+	merge 1:1 year quarter using $outputs/temp_foia16c_foia13_y`yr'q`qr'.dta //a = no masking, b = no id, c= masking
+	drop _merge
 	save $outputs/temp_foia16_foia13_y`yr'q`qr'.dta, replace
+
+	
     }
 }
 
