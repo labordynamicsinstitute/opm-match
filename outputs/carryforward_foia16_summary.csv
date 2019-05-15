@@ -1,2 +1,2 @@
-obs_foia16,merge_insample,merge_outsample,merge_matched,matched_rate,merge_insample_nomiss,merge_outsample_nomiss,merge_matched_nomiss,matched_rate_nomiss
-17307260,1055715,6443882,10863379,.62767756,1055715,2206265,10863379,.62767756
+obs_foia16,merge_insample_a,merge_outsample_a,merge_matched_a,matched_rate_a,merge_insample_b,merge_outsample_b,merge_matched_b,matched_rate_b
+17307260,1055715,2206265,10863379,.62767756,6729136,6722046,7403313,.42775765

@@ -70,6 +70,7 @@ forval yr = 2000/2012 {
     forval qr = 1/4 {
 	append using $outputs/temp_foia16_attribute_y`yr'q`qr'.dta
     }
+}
 ren sex sexa
 by id_foia (q_date), sort: keep if _n==_N
 drop q_date
@@ -80,12 +81,14 @@ save $outputs/temp_foia16_attribute1.dta, replace
 forval yr = 2000/2012 {
     forval qr = 1/4 {
 	use $outputs/binary_merge_foia16_foia13_y`yr'q`qr'.dta, clear
-	keep if id_foia16 != ""
-	keep sex $carrylist
+	keep sex $carrylista
 	drop if sex == ""
+	by $carrylista, sort: keep if _n ==_N 
 	save $outputs/temp_foia16_attribute_y`yr'q`qr'.dta, replace
     }
 }
+
+clear
 forval yr = 2000/2012 {
     forval qr = 1/4 {
         append using $outputs/temp_foia16_attribute_y`yr'q`qr'.dta
@@ -103,7 +106,7 @@ forval yr = 2000/2012 {
 
 
 *keep latest attribute of an individual (has ID)
-use $outputs/temp_foia16_attribute.dta, clear
+use $outputs/temp_foia16_attribute1.dta, clear
 
 *attach attribute to out-of-scope FOIA 2016 data
 noisily merge 1:m id_foia16 using $data/foia16a_outsample.dta
@@ -114,27 +117,28 @@ noisily merge 1:m id_foia16 using $data/foia16a_outsample.dta
 	local merge2a = `r(N)'
 	count if mergea ==3 //Matched
 	local merge3a = `r(N)'
+drop if mergea == 1
 save $outputs/carryforward_foia16a.dta, replace
 
 
 
 *remerge using matching varlist without longitudinal var and location var
-use $outputs/temp_foia16_attribute.dta, clear
+use $outputs/temp_foia16_attribute2.dta, clear
 ren sex sexb
 
 *attach attribute to out-of-scope FOIA 2016 data
-noisily merge m:m $carrylist using $outputs/carryforward_foia16a.dta
+noisily merge m:m $carrylista using $outputs/carryforward_foia16a.dta
 	ren _merge mergeb
-	count if _mergeb ==1 //2000-2012 sample
+	count if mergeb ==1 //2000-2012 sample
 	local merge1b = `r(N)'
-	count if _mergeb ==2 //2013-2016 sample
+	count if mergeb ==2 //2013-2016 sample
 	local merge2b = `r(N)'
-	count if _mergeb ==3 //Matched
+	count if mergeb ==3 //Matched
 	local merge3b = `r(N)'
 
 save $outputs/carryforward_foia16a.dta, replace
 
-gen test = (sexa == sexb) if id_foia != "#########"
+gen test = (sexa == sexb) if mergeb != 1 & sexa != "" & sexb != ""
 tab test
 
 
