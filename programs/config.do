@@ -17,11 +17,14 @@ global end_date = yq(2016,1)
 //merge varlist for FOIA 2013 with FOIA 2016 without masking, compund quote to run properly
 global bvarlist1a `""q_date paylvl_common agency duty_sta age_common loslvl_common occ grade cbsa educ_c tenure posting_length tenure_occ qoq_earn_change_lvl loc occ_cat_common pay_plan appoint schedule ""'
 
-//merge varlist for FOIA 2013 with FOIA 2016 with masking
+//merge varlist for FOIA 2013 with FOIA 2016 with masked ID
 global bvarlist1b `""q_date paylvl_common agency duty_sta age_common loslvl_common occ grade cbsa educ_c loc occ_cat_common pay_plan appoint schedule ""'
 
-//merge varlist for FOIA 2013 with FOIA 2016 with masking
+//merge varlist for FOIA 2013 with FOIA 2016 with masked ID and duty station
 global bvarlist1c `""q_date paylvl_common agency age_common loslvl_common occ grade educ_c occ_cat_common pay_plan appoint schedule ""'
+
+//merge varlist for carryforward FOIA 2013 with FOIA 2016
+global carrylista "paylvl_common agency duty_sta loslvl_common occ grade cbsa educ_c loc occ_cat_common pay_plan appoint schedule" 
 
 //merge varlist for FOIA 2013 with Fedscope
 global bvarlist2 `""q_date adj_pay agency loc age_common sex gs occ grade occ_cat pay_plan appoint schedule ""'

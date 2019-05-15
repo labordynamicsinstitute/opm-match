@@ -148,8 +148,10 @@ forval yr=2000/2012 {
 	merge 1:1 year quarter using $outputs/temp_foia16c_foia13_y`yr'q`qr'.dta //a = no masking, b = no id, c= masking
 	drop _merge
 	save $outputs/temp_foia16_foia13_y`yr'q`qr'.dta, replace
-
 	
+	erase $outputs/temp_foia16a_foia13_y`yr'q`qr'.dta, replace
+	erase $outputs/temp_foia16b_foia13_y`yr'q`qr'.dta, replace
+	erase $outputs/temp_foia16c_foia13_y`yr'q`qr'.dta, replace
     }
 }
 

@@ -41,54 +41,104 @@ Possible program arguments
 |																				|
 ********************************************************************************/
 //foia16_outsample.dta created in 01_format
+*Separate FOIA 2016 outsample into masked and nonmasked files
+use $data/foia16_outsample.dta, clear
+keep if id_foia16 != "#########" & duty_sta != "#########"
+save $data/foia16a_outsample.dta, replace
 
-*keep only the important attribute information of the merge
+use $data/foia16_outsample.dta, clear
+keep if id_foia16 == "#########" & duty_sta != "#########"
+save $data/foia16b_outsample.dta, replace
+
+use $data/foia16_outsample.dta, clear
+keep if duty_sta == "#########"
+save $data/foia16c_outsample.dta, replace
+
+*keep only the ID and attribute information for the merge
 forval yr = 2000/2012 {
-forval qr = 1/4 {
-use $outputs/binary_merge_foia16_foia13_y`yr'q`qr'.dta, clear
-keep if id_foia16 != ""
-keep q_date id_foia16 sex 
-drop if sex == ""
-save $outputs/temp_foia16_attribute_y`yr'q`qr'.dta, replace
-}
+    forval qr = 1/4 {
+	use $outputs/binary_merge_foia16_foia13_y`yr'q`qr'.dta, clear
+	keep if id_foia16 != ""
+	keep q_date id_foia16 sex 
+	drop if sex == ""
+	save $outputs/temp_foia16_attribute_y`yr'q`qr'.dta, replace
+    }
 }
 
 clear
 forval yr = 2000/2012 {
-forval qr = 1/4 {
-append using $outputs/temp_foia16_attribute_y`yr'q`qr'.dta
-}
-}
-save $outputs/temp_foia16_attribute.dta, replace
-
-*keep latest attribute of an individual
+    forval qr = 1/4 {
+	append using $outputs/temp_foia16_attribute_y`yr'q`qr'.dta
+    }
+ren sex sexa
 by id_foia (q_date), sort: keep if _n==_N
 drop q_date
+drop if id_foia == "#########" //drop obs without id
+save $outputs/temp_foia16_attribute1.dta, replace
 
-*attach attribute to out-of-scope FOIA 2016 data
-merge 1:m id_foia16 using $data/foia16_outsample.dta
-
-	count if _merge ==1 //2000-2012 sample
-	local merge1 = `r(N)'
-	count if _merge ==2 //2013-2016 sample
-	local merge2 = `r(N)'
-	count if _merge ==3 //Matched
-	local merge3 = `r(N)'
-
-	count if _merge ==1 & id_foia != "#########"
-	local merge1_nomiss = `r(N)'
-	count if _merge ==2 & id_foia != "#########" 
-	local merge2_nomiss = `r(N)'
-	count if _merge ==3 & id_foia != "#########"
-	local merge3_nomiss = `r(N)'
+*keep only the important varlist and attribute information for the merge
+forval yr = 2000/2012 {
+    forval qr = 1/4 {
+	use $outputs/binary_merge_foia16_foia13_y`yr'q`qr'.dta, clear
+	keep if id_foia16 != ""
+	keep sex $carrylist
+	drop if sex == ""
+	save $outputs/temp_foia16_attribute_y`yr'q`qr'.dta, replace
+    }
+}
+forval yr = 2000/2012 {
+    forval qr = 1/4 {
+        append using $outputs/temp_foia16_attribute_y`yr'q`qr'.dta
+    }
+}
+*"Randomly" assign attribute to the varlist
+by $carrylista, sort: keep if _n ==_N 
+save $outputs/temp_foia16_attribute2.dta, replace
 
 forval yr = 2000/2012 {
-forval qr = 1/4 {
-erase $outputs/temp_foia16_attribute_y`yr'q`qr'.dta
-}
+    forval qr = 1/4 {
+    	erase $outputs/temp_foia16_attribute_y`yr'q`qr'.dta
+    }
 }
 
-save $outputs/carryforward_foia16.dta, replace
+
+*keep latest attribute of an individual (has ID)
+use $outputs/temp_foia16_attribute.dta, clear
+
+*attach attribute to out-of-scope FOIA 2016 data
+noisily merge 1:m id_foia16 using $data/foia16a_outsample.dta
+	ren _merge mergea
+	count if mergea ==1 //2000-2012 sample
+	local merge1a = `r(N)'
+	count if mergea ==2 //2013-2016 sample
+	local merge2a = `r(N)'
+	count if mergea ==3 //Matched
+	local merge3a = `r(N)'
+save $outputs/carryforward_foia16a.dta, replace
+
+
+
+*remerge using matching varlist without longitudinal var and location var
+use $outputs/temp_foia16_attribute.dta, clear
+ren sex sexb
+
+*attach attribute to out-of-scope FOIA 2016 data
+noisily merge m:m $carrylist using $outputs/carryforward_foia16a.dta
+	ren _merge mergeb
+	count if _mergeb ==1 //2000-2012 sample
+	local merge1b = `r(N)'
+	count if _mergeb ==2 //2013-2016 sample
+	local merge2b = `r(N)'
+	count if _mergeb ==3 //Matched
+	local merge3b = `r(N)'
+
+save $outputs/carryforward_foia16a.dta, replace
+
+gen test = (sexa == sexb) if id_foia != "#########"
+tab test
+
+
+
 
 /********************************************************************************
 |																				|
@@ -103,14 +153,14 @@ local obs_foia16_nomiss = `r(N)'
 clear
 set obs 1
 gen obs_foia16= `obs_foia16'
-gen merge_insample= `merge1'
-gen merge_outsample= `merge2'
-gen merge_matched= `merge3'
-gen matched_rate = merge_matched/(obs_foia16)
-gen merge_insample_nomiss= `merge1_nomiss'
-gen merge_outsample_nomiss= `merge2_nomiss'
-gen merge_matched_nomiss= `merge3_nomiss'
-gen matched_rate_nomiss = merge_matched_nomiss/(obs_foia16)
+gen merge_insample_a= `merge1a'
+gen merge_outsample_a= `merge2a'
+gen merge_matched_a= `merge3a'
+gen matched_rate_a = merge_matched_a/(obs_foia16)
+gen merge_insample_b= `merge1b'
+gen merge_outsample_b= `merge2b'
+gen merge_matched_b= `merge3b'
+gen matched_rate_b = merge_matched_b/(obs_foia16)
 
 saveold $outputs/carryforward_foia16_summary.dta, replace
 export delimited $outputs/carryforward_foia16_summary.csv, replace
